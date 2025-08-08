@@ -49,8 +49,9 @@ def test_snakemake_all_failure(module_path):
 def test_snakemake_integration_testing(module_path):
     """Run a light-weight test simulating someone using this module."""
     key = os.getenv("CDSAPI_KEY")
-    if key:
-        Path.home().joinpath(".cdsapirc").write_text(
+    cds_file = Path.home().joinpath(".cdsapirc")
+    if key and not cds_file.exists():
+        cds_file.write_text(
             "url = https://cds.climate.copernicus.eu/api\n"
             f"key = {key}\n"
         )

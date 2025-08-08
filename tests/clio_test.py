@@ -52,7 +52,7 @@ def test_snakemake_integration_testing(module_path):
     cds_file = Path.home().joinpath(".cdsapirc")
     if key and not cds_file.exists():
         cds_file.write_text(
-            f"url = https://cds.climate.copernicus.eu/api\nkey = {key}\n"
+            f"url: https://cds.climate.copernicus.eu/api\nkey: {key}\n"
         )
 
     assert subprocess.run(

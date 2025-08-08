@@ -27,5 +27,3 @@ gurobi.log
 **/results/*
 **/temp/*
 **/tmp/*
-!tests/integration/resources/automatic/
-!tests/integration/resources/user

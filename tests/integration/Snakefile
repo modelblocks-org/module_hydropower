@@ -12,6 +12,8 @@ module module_hydropower:
         "../../workflow/Snakefile"
     config:
         config["module_hydropower"]
+    prefix:
+        "results/integration_test/"
 
 
 # rename all module rules with a prefix, to avoid naming conflicts.
@@ -24,5 +26,5 @@ rule all:
         "Generate CF timeseries for a small country."
     default_target: True
     input:
-        "results/by_shape_id/hydro_dam_cf.parquet",
-        "results/by_shape_id/hydro_run_of_river_cf.parquet",
+        "results/integration_test/results/by_shape_id/hydro_dam_cf.parquet",
+        "results/integration_test/results/by_shape_id/hydro_run_of_river_cf.parquet",

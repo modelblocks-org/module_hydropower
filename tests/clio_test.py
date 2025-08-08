@@ -4,6 +4,7 @@ DO NOT MANUALLY MODIFY THIS FILE!
 It should be updated through our templating functions.
 """
 
+import os
 import subprocess
 from pathlib import Path
 
@@ -47,6 +48,13 @@ def test_snakemake_all_failure(module_path):
 
 def test_snakemake_integration_testing(module_path):
     """Run a light-weight test simulating someone using this module."""
+    key = os.getenv("CDSAPI_KEY")
+    if key:
+        Path.home().joinpath(".cdsapirc").write_text(
+            "url = https://cds.climate.copernicus.eu/api\n"
+            f"key = {key}\n"
+        )
+
     assert subprocess.run(
         "snakemake --use-conda --cores 1",
         shell=True,

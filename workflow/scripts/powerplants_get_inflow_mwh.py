@@ -44,7 +44,7 @@ def _estimate_bounded_powerplant_inflow(
     national_generation: pd.DataFrame,
     year: int,
     capacity_factor_range: dict,
-    technology_mapping: dict
+    technology_mapping: dict,
 ) -> pd.DataFrame:
     """Obtain magnitude-corrected hydropower timeseries dataset for a given year.
 

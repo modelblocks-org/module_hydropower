@@ -19,19 +19,21 @@ def _plot_adjustment(
     powerplants_path: str,
     adjusted_powerplants_path: str,
     plot_path: str,
+    crs: dict
 ):
-    shapes = gpd.read_parquet(shapes_path)
-    before = gpd.read_parquet(powerplants_path)
-    after = gpd.read_parquet(adjusted_powerplants_path)
+    shapes = gpd.read_parquet(shapes_path).to_crs(crs["projected"])
+    before = gpd.read_parquet(powerplants_path).to_crs(crs["projected"])
+    after = gpd.read_parquet(adjusted_powerplants_path).to_crs(crs["projected"])
     difference = before[~before["powerplant_id"].isin(after["powerplant_id"])]
 
-    ax = shapes.plot(figsize=(10, 10), color="royalblue")
+    fig, ax = plt.subplots(figsize=(10, 10), layout="constrained")
+    ax = shapes.plot(ax=ax, color="royalblue")
     after.plot(ax=ax, color="black", marker=".", markersize=8, label="Within")
     if not difference.empty:
         difference.plot(ax=ax, color="coral", marker=".", markersize=8, label="Dropped")
     ax.legend()
     ax.set_title("Powerplant adjustment")
-    plt.savefig(plot_path, bbox_inches="tight")
+    fig.savefig(plot_path)
 
 
 def powerplants_adjust_location(
@@ -142,4 +144,5 @@ if __name__ == "__main__":
         powerplants_path=snakemake.input.powerplants,
         adjusted_powerplants_path=snakemake.output.adjusted_powerplants,
         plot_path=snakemake.output.plot,
+        crs=snakemake.params.crs
     )

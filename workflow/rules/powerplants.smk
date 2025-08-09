@@ -8,9 +8,7 @@ rule powerplants_adjust_location:
         crs=config["crs"],
         basin_adjustment=config["powerplants"]["basin_adjustment"],
     input:
-        basins=ancient(
-            f"resources/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet"
-        ),
+        basins=f"resources/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet",
         powerplants="resources/user/powerplants.parquet",
         shapes="resources/user/shapes.parquet",
     output:
@@ -35,11 +33,9 @@ rule powerplants_get_inflow_m3:
         smoothing_hours=config["smoothing_hours"],
     input:
         adjusted_powerplants="results/adjusted_powerplants.parquet",
-        basins=ancient(
-            f"resources/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet"
-        ),
+        basins=f"resources/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet",
         shapes="resources/user/shapes.parquet",
-        cutout=ancient("resources/automatic/cutout.nc"),
+        cutout="resources/automatic/cutout.nc",
     output:
         inflow="results/by_powerplant_id/inflow_m3.parquet",
     log:
@@ -55,10 +51,11 @@ rule powerplants_get_inflow_mwh:
         "Calculating powerplant generation in MWh and applying corrections using historical data."
     params:
         capacity_factor_range=internal["capacity_factor_range"],
+        technology_mapping=config["powerplants"]["technology_mapping"],
     input:
         inflow_m3="results/by_powerplant_id/inflow_m3.parquet",
         adjusted_powerplants="results/adjusted_powerplants.parquet",
-        national_generation="resources/user/national_generation.parquet",
+        statistics="results/statistics/generation.parquet",
     output:
         inflow_mwh="results/by_powerplant_id/inflow_mwh.parquet",
     log:

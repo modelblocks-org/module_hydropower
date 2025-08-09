@@ -16,7 +16,7 @@ sys.stderr = open(snakemake.log[0], "w", buffering=1)
 
 
 # ---
-# Taken from Euro-Calliope (MIT licensed)s
+# Taken from Euro-Calliope (MIT licensed)
 # https://github.com/calliope-project/euro-calliope/blob/e9cb908a5b4c6274148a16b59e5dd0b412aaf560/scripts/hydro/inflow_mwh.py
 def _water_inflow_m3_to_mwh(inflow_m3: pd.Series, annual_generation: float, cap: float):
     def generation(scaling_factor):
@@ -43,7 +43,8 @@ def _estimate_bounded_powerplant_inflow(
     inflow_m3: pd.DataFrame,
     national_generation: pd.DataFrame,
     year: int,
-    capacity_factor_range: dict[str, float],
+    capacity_factor_range: dict,
+    technology_mapping: dict
 ) -> pd.DataFrame:
     """Obtain magnitude-corrected hydropower timeseries dataset for a given year.
 
@@ -87,10 +88,14 @@ def _estimate_bounded_powerplant_inflow(
     inflow_mwh_yr = pd.DataFrame(
         np.nan, index=inflow_m3_yr.index, columns=inflow_m3_yr.columns
     )
+
+    # Invert the mapping to enable searching names in user files
+    inverted_mapping = {v: k for k, v in technology_mapping.items()}
+
     for plant_id, plant_data in plants_by_id.iterrows():
         inflow_m3_per_hour = inflow_m3_yr[plant_id]
         annual_generation_mwh = annual_powerplant_mwh[plant_id]
-        cf_range = capacity_factor_range[plant_data["technology"]]
+        cf_range = capacity_factor_range[inverted_mapping[plant_data["technology"]]]
 
         # Obtain MWh, ensuring max-cutoff is not exceeded
         max_cutoff = plant_data["output_capacity_mw"] * cf_range["max"]
@@ -115,8 +120,9 @@ def _estimate_bounded_powerplant_inflow(
 def powerplants_get_inflow_mwh(
     inflow_m3_file: str,
     powerplants_file: str,
-    national_generation_file: str,
-    capacity_factor_range: dict[str, float],
+    statistics_file: str,
+    capacity_factor_range: dict,
+    technology_mapping: dict,
     inflow_mwh_file: str,
 ):
     """Generate inflow timeseries using unscaled water time series.
@@ -124,14 +130,13 @@ def powerplants_get_inflow_mwh(
     Args:
         inflow_m3_file (str): Dataset with water inflow per-powerplant in m3.
         powerplants_file (str): Powerplants dataset (adjusted).
-        national_generation_file (str): Annual national hydropower generation per country.
-        capacity_factor_range (dict[str, float]): Max/min range of inflow in relation to the plant's capacity.
+        statistics_file (str): Annual national hydropower generation per country.
+        capacity_factor_range (dict): Max/min range of inflow in relation to the plant's capacity.
+        technology_mapping (dict): names of technologies in user files.
         inflow_mwh_file (str): Resulting file with energy inflow per powerplant in MWh.
     """
     inflow_m3 = pd.read_parquet(inflow_m3_file)
-    generation = _schemas.EIAGenerationSchema.validate(
-        pd.read_parquet(national_generation_file)
-    )
+    generation = _schemas.EIAGenerationSchema.validate(pd.read_parquet(statistics_file))
     # Powerplants are only soft-validated to avoid filtering out imputed country IDs
     powerplants = gpd.read_parquet(powerplants_file)
     _schemas.PowerplantSchema.validate(powerplants)
@@ -139,7 +144,12 @@ def powerplants_get_inflow_mwh(
     year_results = []
     for year in sorted(inflow_m3.index.year.unique()):
         inflow_mwh_yr = _estimate_bounded_powerplant_inflow(
-            powerplants, inflow_m3, generation, year, capacity_factor_range
+            powerplants,
+            inflow_m3,
+            generation,
+            year,
+            capacity_factor_range,
+            technology_mapping,
         )
         year_results.append(inflow_mwh_yr)
 
@@ -152,7 +162,8 @@ if __name__ == "__main__":
     powerplants_get_inflow_mwh(
         inflow_m3_file=snakemake.input.inflow_m3,
         powerplants_file=snakemake.input.adjusted_powerplants,
-        national_generation_file=snakemake.input.national_generation,
+        statistics_file=snakemake.input.statistics,
         capacity_factor_range=snakemake.params.capacity_factor_range,
+        technology_mapping=snakemake.params.technology_mapping,
         inflow_mwh_file=snakemake.output.inflow_mwh,
     )

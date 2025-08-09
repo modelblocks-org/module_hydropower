@@ -12,7 +12,7 @@ from scipy.optimize import minimize
 
 if TYPE_CHECKING:
     snakemake: Any
-sys.stderr = open(snakemake.log[0], "w")
+sys.stderr = open(snakemake.log[0], "w", buffering=1)
 
 
 # ---
@@ -125,14 +125,14 @@ def powerplants_get_inflow_mwh(
         inflow_m3_file (str): Dataset with water inflow per-powerplant in m3.
         powerplants_file (str): Powerplants dataset (adjusted).
         national_generation_file (str): Annual national hydropower generation per country.
-        capacity_factor_range (dict[str]): Max/min range of inflow in relation to the plant's capacity.
+        capacity_factor_range (dict[str, float]): Max/min range of inflow in relation to the plant's capacity.
         inflow_mwh_file (str): Resulting file with energy inflow per powerplant in MWh.
     """
     inflow_m3 = pd.read_parquet(inflow_m3_file)
+    generation = _schemas.EIAGenerationSchema.validate(pd.read_parquet(national_generation_file))
+    # Powerplants are only soft-validated to avoid filtering out imputed country IDs
     powerplants = gpd.read_parquet(powerplants_file)
-    generation = pd.read_parquet(national_generation_file)
     _schemas.PowerplantSchema.validate(powerplants)
-    _schemas.EIAGenerationSchema.validate(generation)
 
     year_results = []
     for year in sorted(inflow_m3.index.year.unique()):

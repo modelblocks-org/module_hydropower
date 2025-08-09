@@ -35,7 +35,8 @@ class EIAGenerationSchema(DataFrameModel):
     "Country ISO-3 code"
     year: Series[int]
     "Sample year"
-    generation_mwh: Series[float] = Field(ge=0)
+    category: Series[str] = Field(isin=["hydropower"])
+    generation_mwh: Series[float] = Field(ge=0, nullable=True)
     "Hydropower generation for the given year"
 
     index: Index[int] = Field(unique=True)

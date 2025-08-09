@@ -11,7 +11,7 @@ import pandas as pd
 
 if TYPE_CHECKING:
     snakemake: Any
-sys.stderr = open(snakemake.log[0], "w")
+sys.stderr = open(snakemake.log[0], "w", buffering=1)
 
 
 def _plot_cf_per_shape(cf_file: str, plant_type: str, fig_path: str):

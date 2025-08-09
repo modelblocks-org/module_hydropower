@@ -10,7 +10,7 @@ import geopandas as gpd
 
 if TYPE_CHECKING:
     snakemake: Any
-sys.stderr = open(snakemake.log[0], "w")
+sys.stderr = open(snakemake.log[0], "w", buffering=1)
 
 
 def powerplants_get_inflow_m3(

@@ -233,8 +233,9 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/orc-2.2.0-h1bc01a4_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/packaging-25.0-pyh29332c3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pandas-2.3.1-py313h08cd8bf_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.25.0-hd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.25.0-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.24.0-hd8ed1ab_2.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.24.0-pyhd8ed1ab_2.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-geopandas-0.24.0-hd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pango-1.56.4-hadf4263_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/parso-0.8.4-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pathspec-0.12.1-pyhd8ed1ab_1.conda
@@ -570,8 +571,9 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/orc-2.2.0-hca0cb2d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/packaging-25.0-pyh29332c3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pandas-2.3.1-py313hd1f53c0_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.25.0-hd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.25.0-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.24.0-hd8ed1ab_2.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.24.0-pyhd8ed1ab_2.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-geopandas-0.24.0-hd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pango-1.56.4-h875632e_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/parso-0.8.4-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pathspec-0.12.1-pyhd8ed1ab_1.conda
@@ -870,8 +872,9 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/win-64/orc-2.2.0-h0018cbe_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/packaging-25.0-pyh29332c3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/pandas-2.3.1-py313hc90dcd4_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.25.0-hd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.25.0-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.24.0-hd8ed1ab_2.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.24.0-pyhd8ed1ab_2.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pandera-geopandas-0.24.0-hd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/pango-1.56.4-h03d888a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/parso-0.8.4-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pathspec-0.12.1-pyhd8ed1ab_1.conda
@@ -7993,20 +7996,20 @@ packages:
   license_family: BSD
   size: 13924933
   timestamp: 1752082433528
-- conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.25.0-hd8ed1ab_1.conda
-  sha256: b4eb7857d927b9001a2fdc11ee70add246c2de80e1e08bff3a8b67ce0cdc7912
-  md5: c9dca5dbec0de5c56e248087ba18ac02
+- conda: https://conda.anaconda.org/conda-forge/noarch/pandera-0.24.0-hd8ed1ab_2.conda
+  sha256: 857657552f1a8441e4c9e723637b8270f46b6262403dc18a76559dd5a5ba782e
+  md5: a12a21a89519f0cc224e44da86f5be2c
   depends:
   - numpy >=1.24.4
   - pandas >=2.1.1
-  - pandera-base 0.25.0 pyhd8ed1ab_1
+  - pandera-base 0.24.0 pyhd8ed1ab_2
   license: MIT
   license_family: MIT
-  size: 7458
-  timestamp: 1752079800481
-- conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.25.0-pyhd8ed1ab_1.conda
-  sha256: 98c3b93e690426dbdd5ef788db9b183bc75202ebbc563ed1859df39da2f86e8f
-  md5: 8f88cb3ba3aac2992171892cd5f6d48d
+  size: 7364
+  timestamp: 1749059959229
+- conda: https://conda.anaconda.org/conda-forge/noarch/pandera-base-0.24.0-pyhd8ed1ab_2.conda
+  sha256: 98b3e59268d73824fabc3535fbe48f5973eb70f3975686bcf35949a9f3daaa17
+  md5: e1c50e117a98e39d297d9290132f032b
   depends:
   - packaging >=20.0
   - pydantic
@@ -8015,8 +8018,19 @@ packages:
   - typing_inspect >=0.6.0
   license: MIT
   license_family: MIT
-  size: 164068
-  timestamp: 1752079799520
+  size: 154521
+  timestamp: 1749059957954
+- conda: https://conda.anaconda.org/conda-forge/noarch/pandera-geopandas-0.24.0-hd8ed1ab_2.conda
+  sha256: 53d1591315e0688c796af5d70b426536e704f9c8d3fdc2a650eb14a3ecfc7f88
+  md5: fb21509f073465506ea994dc4667bf66
+  depends:
+  - geopandas
+  - pandera 0.24.0 hd8ed1ab_2
+  - shapely
+  license: MIT
+  license_family: MIT
+  size: 7429
+  timestamp: 1749059961525
 - conda: https://conda.anaconda.org/conda-forge/linux-64/pango-1.56.4-hadf4263_0.conda
   sha256: 3613774ad27e48503a3a6a9d72017087ea70f1426f6e5541dbdb59a3b626eaaf
   md5: 79f71230c069a287efe3a8614069ddf1

@@ -22,6 +22,7 @@ snakefmt = ">=0.10.2"
 snakemake-minimal = ">=8.29.0"
 pyarrow = ">=21.0.0,<22"
 geopandas = ">=1.1.1,<2"
+pandera-geopandas = ">=0.24.0,<0.25"
 
 [tasks]
 test-integration = {cmd = "pytest tests/clio_test.py"}

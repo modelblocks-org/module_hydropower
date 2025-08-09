@@ -1,5 +1,19 @@
 """Rules to used to download automatic resource files."""
 
+rule download_eia:
+    message:
+        "Download the EIA International energy statistics in bulk."
+    params:
+        url=internal["resources"]["automatic"]["EIA"],
+    output:
+        path="resources/automatic/downloads/EIA-INTL.txt",
+    log:
+        "logs/download_eia.log",
+    conda:
+        "../envs/shell.yaml"
+    shell:
+        'curl -sSLo {output.path:q} "{params.url}"'
+
 
 rule download_basin:
     message:

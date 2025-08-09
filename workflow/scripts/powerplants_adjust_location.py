@@ -11,7 +11,7 @@ from pyproj import CRS
 
 if TYPE_CHECKING:
     snakemake: Any
-sys.stderr = open(snakemake.log[0], "w")
+sys.stderr = open(snakemake.log[0], "w", buffering=1)
 
 
 def _plot_adjustment(

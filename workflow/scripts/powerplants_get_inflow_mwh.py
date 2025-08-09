@@ -137,11 +137,14 @@ def powerplants_get_inflow_mwh(
     powerplants = gpd.read_parquet(powerplants_file)
     _schemas.PowerplantSchema.validate(powerplants)
 
-    # Make our internal naming match the user's
+    # Match user technology names with those in our internal settings
+    # and process only relevant technologies
     remapped_cf_range = {
         v: capacity_factor_range[k] for k, v in technology_mapping.items()
     }
-
+    powerplants = powerplants[
+        powerplants["technology"].isin(technology_mapping.values())
+    ]
     year_results = []
     for year in sorted(inflow_m3.index.year.unique()):
         inflow_mwh_yr = _estimate_bounded_powerplant_inflow(

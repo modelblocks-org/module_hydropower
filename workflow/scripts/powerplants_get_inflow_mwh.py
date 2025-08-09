@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     snakemake: Any
 sys.stderr = open(snakemake.log[0], "w")
 
+
 # ---
 # Taken from Euro-Calliope (MIT licensed)s
 # https://github.com/calliope-project/euro-calliope/blob/e9cb908a5b4c6274148a16b59e5dd0b412aaf560/scripts/hydro/inflow_mwh.py

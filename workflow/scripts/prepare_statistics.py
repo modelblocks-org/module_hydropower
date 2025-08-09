@@ -16,9 +16,9 @@ if TYPE_CHECKING:
 sys.stderr = open(snakemake.log[0], "w", buffering=1)
 
 CAT_ID = {
-    "hydropower": 33,
+    "hydropower": 33
     # "pumped storage": 82, TODO: add pumped storage estimations in future updates
-    }
+}
 
 
 def _get_id_data(eia_df: pd.DataFrame, code: str) -> pd.DataFrame:
@@ -53,9 +53,7 @@ def _get_country_hydro_generation(eia_df: pd.DataFrame, country_a3: str):
     return country_generation
 
 
-def prepare(
-    input_shapes: str, input_eia_bulk: str, output_generation: str
-):
+def prepare(input_shapes: str, input_eia_bulk: str, output_generation: str):
     """Generate a file with annual hydropower generation statistics per country.
 
     Args:
@@ -84,9 +82,7 @@ def prepare(
 
 
 def plot(
-    input_generation: str,
-    output_plot: str,
-    figsize: tuple[float, float] = (12, 6),
+    input_generation: str, output_plot: str, figsize: tuple[float, float] = (12, 6)
 ):
     """Plot per-country evolution of hydropower generation over time."""
     df_cats = pd.read_parquet(input_generation)
@@ -124,7 +120,6 @@ def plot(
             )
             _ = pivot.plot(kind="bar", stacked=True, ax=ax, legend=False, zorder=1)
 
-
             handles, labels = ax.get_legend_handles_labels()
             ax.legend(
                 handles[::-1],
@@ -151,6 +146,5 @@ if __name__ == "__main__":
         output_generation=snakemake.output.generation,
     )
     plot(
-        input_generation=snakemake.output.generation,
-        output_plot=snakemake.output.plot,
+        input_generation=snakemake.output.generation, output_plot=snakemake.output.plot
     )

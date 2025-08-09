@@ -1,5 +1,6 @@
 """Rules for collating and preparing hydropower national statistics."""
 
+
 rule prepare_statistics:
     message:
         "Get EIA annual country hydropower generation statistics."

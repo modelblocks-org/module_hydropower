@@ -1,5 +1,6 @@
 """Rules to used to download automatic resource files."""
 
+
 rule download_eia:
     message:
         "Download the EIA International energy statistics in bulk."

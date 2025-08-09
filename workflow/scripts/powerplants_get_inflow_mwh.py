@@ -129,7 +129,9 @@ def powerplants_get_inflow_mwh(
         inflow_mwh_file (str): Resulting file with energy inflow per powerplant in MWh.
     """
     inflow_m3 = pd.read_parquet(inflow_m3_file)
-    generation = _schemas.EIAGenerationSchema.validate(pd.read_parquet(national_generation_file))
+    generation = _schemas.EIAGenerationSchema.validate(
+        pd.read_parquet(national_generation_file)
+    )
     # Powerplants are only soft-validated to avoid filtering out imputed country IDs
     powerplants = gpd.read_parquet(powerplants_file)
     _schemas.PowerplantSchema.validate(powerplants)

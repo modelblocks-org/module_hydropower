@@ -5,13 +5,13 @@ rule prepare_statistics:
     message:
         "Get EIA annual country hydropower generation statistics."
     input:
-        shapes="resources/user/shapes.parquet",
+        shapes="resources/user/{shapes}/shapes.parquet",
         eia_bulk="resources/automatic/downloads/EIA-INTL.txt",
     output:
-        generation="results/statistics/generation.parquet",
-        plot="results/statistics/generation.pdf",
+        generation="results/{shapes}/statistics/generation.parquet",
+        plot="results/{shapes}/statistics/generation.pdf",
     log:
-        "logs/prepare_statistics.log",
+        "logs/{shapes}/prepare_statistics.log",
     conda:
         "../envs/default.yaml"
     script:

@@ -43,17 +43,17 @@ rule download_cutout:
         start_year=config["years"]["start"],
         end_year=config["years"]["end"],
     input:
-        shapes="resources/user/shapes.parquet",
+        shapes="resources/user/{shapes}/shapes.parquet",
     output:
-        cutout="resources/automatic/cutout.nc",
+        cutout="resources/automatic/{shapes}/cutout.nc",
         plot=report(
-            "resources/automatic/cutout.png",
+            "resources/automatic/{shapes}/cutout.png",
             caption="../report/cutout.rst",
             category="Hydropower module",
         ),
     conda:
         "../envs/default.yaml"
     log:
-        "logs/download_cutout.log",
+        "logs/{shapes}/download_cutout.log",
     script:
         "../scripts/download_cutout.py"

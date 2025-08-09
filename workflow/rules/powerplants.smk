@@ -9,17 +9,17 @@ rule powerplants_adjust_location:
         basin_adjustment=config["powerplants"]["basin_adjustment"],
     input:
         basins=f"resources/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet",
-        powerplants="resources/user/powerplants.parquet",
-        shapes="resources/user/shapes.parquet",
+        powerplants="resources/user/{shapes}/powerplants.parquet",
+        shapes="resources/user/{shapes}/shapes.parquet",
     output:
-        adjusted_powerplants="resources/automatic/adjusted_powerplants.parquet",
+        adjusted_powerplants="resources/automatic/{shapes}/adjusted_powerplants.parquet",
         plot=report(
-            "results/adjusted_powerplants.png",
+            "resources/automatic/{shapes}/adjusted_powerplants.png",
             caption="../report/adjustment.rst",
             category="Hydropower module",
         ),
     log:
-        "logs/powerplants_adjust_location.log",
+        "logs/{shapes}/powerplants_adjust_location.log",
     conda:
         "../envs/default.yaml"
     script:
@@ -32,14 +32,14 @@ rule powerplants_get_inflow_m3:
     params:
         smoothing_hours=config["smoothing_hours"],
     input:
-        adjusted_powerplants="resources/automatic/adjusted_powerplants.parquet",
+        adjusted_powerplants="resources/automatic/{shapes}/adjusted_powerplants.parquet",
         basins=f"resources/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet",
-        shapes="resources/user/shapes.parquet",
-        cutout="resources/automatic/cutout.nc",
+        shapes="resources/user/{shapes}/shapes.parquet",
+        cutout="resources/automatic/{shapes}/cutout.nc",
     output:
-        inflow="resources/automatic/disaggregated/inflow_m3.parquet",
+        inflow="resources/automatic/{shapes}/disaggregated/inflow_m3.parquet",
     log:
-        "logs/powerplants_get_inflow_m3.log",
+        "logs/{shapes}/powerplants_get_inflow_m3.log",
     conda:
         "../envs/default.yaml"
     script:
@@ -53,13 +53,13 @@ rule powerplants_get_inflow_mwh:
         capacity_factor_range=internal["capacity_factor_range"],
         technology_mapping=config["powerplants"]["technology_mapping"],
     input:
-        inflow_m3="resources/automatic/disaggregated/inflow_m3.parquet",
-        adjusted_powerplants="resources/automatic/adjusted_powerplants.parquet",
-        statistics="results/statistics/generation.parquet",
+        inflow_m3="resources/automatic/{shapes}/disaggregated/inflow_m3.parquet",
+        adjusted_powerplants="resources/automatic/{shapes}/adjusted_powerplants.parquet",
+        statistics="results/{shapes}/statistics/generation.parquet",
     output:
-        inflow_mwh="results/disaggregated/inflow_mwh.parquet",
+        inflow_mwh="results/{shapes}/disaggregated/inflow_mwh.parquet",
     log:
-        "logs/powerplants_get_inflow_mwh.log",
+        "logs/{shapes}/powerplants_get_inflow_mwh.log",
     conda:
         "../envs/default.yaml"
     script:
@@ -72,19 +72,19 @@ rule powerplants_get_cf_per_shape:
     params:
         technology_mapping=config["powerplants"]["technology_mapping"],
     input:
-        adjusted_powerplants="resources/automatic/adjusted_powerplants.parquet",
-        inflow_mwh="results/disaggregated/inflow_mwh.parquet",
+        adjusted_powerplants="resources/automatic/{shapes}/adjusted_powerplants.parquet",
+        inflow_mwh="results/{shapes}/disaggregated/inflow_mwh.parquet",
     output:
-        timeseries="results/aggregated/{plant_type}_cf.parquet",
+        timeseries="results/{shapes}/aggregated/{plant_type}_cf.parquet",
         figure=report(
-            "results/aggregated/{plant_type}_cf.png",
+            "results/{shapes}/aggregated/{plant_type}_cf.png",
             caption="../report/cf_per_shape.rst",
             category="Hydropower module",
         ),
     wildcard_constraints:
         plant_type="|".join(["run_of_river", "reservoir"]),
     log:
-        "logs/powerplants_get_cf_per_shape_{plant_type}.log",
+        "logs/{shapes}/powerplants_get_cf_per_shape_{plant_type}.log",
     conda:
         "../envs/default.yaml"
     script:

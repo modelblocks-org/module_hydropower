@@ -12,7 +12,7 @@ rule powerplants_adjust_location:
         powerplants="resources/user/powerplants.parquet",
         shapes="resources/user/shapes.parquet",
     output:
-        adjusted_powerplants="results/adjusted_powerplants.parquet",
+        adjusted_powerplants="resources/automatic/adjusted_powerplants.parquet",
         plot=report(
             "results/adjusted_powerplants.png",
             caption="../report/adjustment.rst",
@@ -32,12 +32,12 @@ rule powerplants_get_inflow_m3:
     params:
         smoothing_hours=config["smoothing_hours"],
     input:
-        adjusted_powerplants="results/adjusted_powerplants.parquet",
+        adjusted_powerplants="resources/automatic/adjusted_powerplants.parquet",
         basins=f"resources/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet",
         shapes="resources/user/shapes.parquet",
         cutout="resources/automatic/cutout.nc",
     output:
-        inflow="results/by_powerplant_id/inflow_m3.parquet",
+        inflow="resources/automatic/disaggregated/inflow_m3.parquet",
     log:
         "logs/powerplants_get_inflow_m3.log",
     conda:
@@ -53,11 +53,11 @@ rule powerplants_get_inflow_mwh:
         capacity_factor_range=internal["capacity_factor_range"],
         technology_mapping=config["powerplants"]["technology_mapping"],
     input:
-        inflow_m3="results/by_powerplant_id/inflow_m3.parquet",
-        adjusted_powerplants="results/adjusted_powerplants.parquet",
+        inflow_m3="resources/automatic/disaggregated/inflow_m3.parquet",
+        adjusted_powerplants="resources/automatic/adjusted_powerplants.parquet",
         statistics="results/statistics/generation.parquet",
     output:
-        inflow_mwh="results/by_powerplant_id/inflow_mwh.parquet",
+        inflow_mwh="results/disaggregated/inflow_mwh.parquet",
     log:
         "logs/powerplants_get_inflow_mwh.log",
     conda:
@@ -69,18 +69,20 @@ rule powerplants_get_inflow_mwh:
 rule powerplants_get_cf_per_shape:
     message:
         "Calculating capacity factor timeseries per shape for '{wildcards.plant_type}'."
+    params:
+        technology_mapping=config["powerplants"]["technology_mapping"],
     input:
-        adjusted_powerplants="results/adjusted_powerplants.parquet",
-        inflow_mwh="results/by_powerplant_id/inflow_mwh.parquet",
+        adjusted_powerplants="resources/automatic/adjusted_powerplants.parquet",
+        inflow_mwh="results/disaggregated/inflow_mwh.parquet",
     output:
-        timeseries="results/by_shape_id/{plant_type}_cf.parquet",
+        timeseries="results/aggregated/{plant_type}_cf.parquet",
         figure=report(
-            "results/by_shape_id/{plant_type}_cf.png",
+            "results/aggregated/{plant_type}_cf.png",
             caption="../report/cf_per_shape.rst",
             category="Hydropower module",
         ),
     wildcard_constraints:
-        plant_type="|".join(["hydro_run_of_river", "hydro_dam"]),
+        plant_type="|".join(["run_of_river", "reservoir"]),
     log:
         "logs/powerplants_get_cf_per_shape_{plant_type}.log",
     conda:

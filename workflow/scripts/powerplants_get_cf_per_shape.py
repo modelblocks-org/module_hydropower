@@ -3,6 +3,7 @@
 import sys
 from typing import TYPE_CHECKING, Any
 
+import _plots
 import _schemas
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -16,20 +17,26 @@ sys.stderr = open(snakemake.log[0], "w", buffering=1)
 
 def _plot_cf_per_shape(cf_file: str, plant_type: str, fig_path: str):
     data = pd.read_parquet(cf_file)
-    if not data.empty:
-        fig, axes = plt.subplots(
-            len(data.columns), 1, figsize=(10, 1.5 * len(data.columns))
-        )
-        for count, shape_id in enumerate(data.columns):
-            data[shape_id].plot(ax=axes[count])
-            axes[count].set_title(shape_id)
-            axes[count].set_xlabel("")
-        fig.suptitle(f"Inflow capacity factors {plant_type}", fontsize="x-large")
-        fig.tight_layout()
+
+    n = max(1, len(data.columns))
+    fig, axes = plt.subplots(n, 1, figsize=(10, 1.5 * n), squeeze=False)
+    axes = axes.ravel()
+
+    if data.empty:
+        _plots.draw_empty(axes[0], f"Inflow capacity factors {plant_type}")
     else:
-        # If no data, create an empty figure to avoid snakemake issues.
-        plt.plot()
-    plt.savefig(fig_path, bbox_inches="tight")
+        for idx, shape_id in enumerate(data.columns):
+            if data[shape_id].dropna().empty:
+                _plots.draw_empty(axes[idx], str(shape_id))
+            else:
+                data[shape_id].plot(ax=axes[idx])
+                axes[idx].set_title(str(shape_id))
+                axes[idx].set_xlabel("")
+
+    fig.suptitle(f"Inflow capacity factors {plant_type}", fontsize="x-large")
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
+    fig.savefig(fig_path, bbox_inches="tight")
+    plt.close(fig)
 
 
 def _get_capacity_factors_timeseries(
@@ -75,6 +82,7 @@ def powerplants_get_cf_per_shape(
     powerplants_file: gpd.GeoDataFrame,
     inflow_mwh_file: pd.DataFrame,
     plant_type: str,
+    technology_mapping: dict,
     output_path: str,
 ):
     """Construct a capacity factor file for each type of hydro plant."""
@@ -83,16 +91,19 @@ def powerplants_get_cf_per_shape(
 
     _schemas.PowerplantSchema.validate(powerplants)
 
-    cap_factors = _get_capacity_factors_timeseries(plant_type, powerplants, inflow_mwh)
+    user_plant_name = technology_mapping[plant_type]
+    cap_factors = _get_capacity_factors_timeseries(
+        user_plant_name, powerplants, inflow_mwh
+    )
     cap_factors.to_parquet(output_path)
 
 
-def main():
-    """Calculate CFs and obtain plots."""
+if __name__ == "__main__":
     powerplants_get_cf_per_shape(
         powerplants_file=snakemake.input.adjusted_powerplants,
         inflow_mwh_file=snakemake.input.inflow_mwh,
         plant_type=snakemake.wildcards.plant_type,
+        technology_mapping=snakemake.params.technology_mapping,
         output_path=snakemake.output.timeseries,
     )
     _plot_cf_per_shape(
@@ -100,7 +111,3 @@ def main():
         plant_type=snakemake.wildcards.plant_type,
         fig_path=snakemake.output.figure,
     )
-
-
-if __name__ == "__main__":
-    main()

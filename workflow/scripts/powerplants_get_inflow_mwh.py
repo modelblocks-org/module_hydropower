@@ -44,7 +44,6 @@ def _estimate_bounded_powerplant_inflow(
     national_generation: pd.DataFrame,
     year: int,
     capacity_factor_range: dict,
-    technology_mapping: dict,
 ) -> pd.DataFrame:
     """Obtain magnitude-corrected hydropower timeseries dataset for a given year.
 
@@ -89,13 +88,10 @@ def _estimate_bounded_powerplant_inflow(
         np.nan, index=inflow_m3_yr.index, columns=inflow_m3_yr.columns
     )
 
-    # Invert the mapping to enable searching names in user files
-    inverted_mapping = {v: k for k, v in technology_mapping.items()}
-
     for plant_id, plant_data in plants_by_id.iterrows():
         inflow_m3_per_hour = inflow_m3_yr[plant_id]
         annual_generation_mwh = annual_powerplant_mwh[plant_id]
-        cf_range = capacity_factor_range[inverted_mapping[plant_data["technology"]]]
+        cf_range = capacity_factor_range[plant_data["technology"]]
 
         # Obtain MWh, ensuring max-cutoff is not exceeded
         max_cutoff = plant_data["output_capacity_mw"] * cf_range["max"]
@@ -141,15 +137,15 @@ def powerplants_get_inflow_mwh(
     powerplants = gpd.read_parquet(powerplants_file)
     _schemas.PowerplantSchema.validate(powerplants)
 
+    # Make our internal naming match the user's
+    remapped_cf_range = {
+        v: capacity_factor_range[k] for k, v in technology_mapping.items()
+    }
+
     year_results = []
     for year in sorted(inflow_m3.index.year.unique()):
         inflow_mwh_yr = _estimate_bounded_powerplant_inflow(
-            powerplants,
-            inflow_m3,
-            generation,
-            year,
-            capacity_factor_range,
-            technology_mapping,
+            powerplants, inflow_m3, generation, year, remapped_cf_range
         )
         year_results.append(inflow_mwh_yr)
 

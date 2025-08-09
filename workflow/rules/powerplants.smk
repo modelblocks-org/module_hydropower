@@ -12,9 +12,7 @@ rule powerplants_adjust_location:
             f"resources/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet"
         ),
         powerplants="resources/user/powerplants.parquet",
-        powerplant_schema=workflow.source_path("../internal/powerplant.schema.yaml"),
         shapes="resources/user/shapes.parquet",
-        shape_schema=workflow.source_path("../internal/shape.schema.yaml"),
     output:
         adjusted_powerplants="results/adjusted_powerplants.parquet",
         plot=report(
@@ -40,9 +38,7 @@ rule powerplants_get_inflow_m3:
         basins=ancient(
             f"resources/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet"
         ),
-        powerplant_schema=workflow.source_path("../internal/powerplant.schema.yaml"),
         shapes="resources/user/shapes.parquet",
-        shape_schema=workflow.source_path("../internal/shape.schema.yaml"),
         cutout=ancient("resources/automatic/cutout.nc"),
     output:
         inflow="results/by_powerplant_id/inflow_m3.parquet",
@@ -62,11 +58,7 @@ rule powerplants_get_inflow_mwh:
     input:
         inflow_m3="results/by_powerplant_id/inflow_m3.parquet",
         adjusted_powerplants="results/adjusted_powerplants.parquet",
-        powerplant_schema=workflow.source_path("../internal/powerplant.schema.yaml"),
         national_generation="resources/user/national_generation.parquet",
-        national_generation_schema=workflow.source_path(
-            "../internal/national_generation.schema.yaml"
-        ),
     output:
         inflow_mwh="results/by_powerplant_id/inflow_mwh.parquet",
     log:
@@ -83,7 +75,6 @@ rule powerplants_get_cf_per_shape:
     input:
         adjusted_powerplants="results/adjusted_powerplants.parquet",
         inflow_mwh="results/by_powerplant_id/inflow_mwh.parquet",
-        schema=workflow.source_path("../internal/powerplant.schema.yaml"),
     output:
         timeseries="results/by_shape_id/{plant_type}_cf.parquet",
         figure=report(

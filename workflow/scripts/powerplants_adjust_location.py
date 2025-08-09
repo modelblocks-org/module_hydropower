@@ -4,16 +4,14 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+import _schemas
 import geopandas as gpd
 import matplotlib.pyplot as plt
-import pandera.io as io
 from pyproj import CRS
 
 if TYPE_CHECKING:
     snakemake: Any
 sys.stderr = open(snakemake.log[0], "w")
-POWERPLANT_SCHEMA = io.from_yaml(snakemake.input.powerplant_schema)
-SHAPE_SCHEMA = io.from_yaml(snakemake.input.shape_schema)
 
 
 def _plot_adjustment(
@@ -65,10 +63,8 @@ def powerplants_adjust_location(
 
     # Read and validate input files
     basins = gpd.read_parquet(basins_path)
-    powerplants = gpd.read_parquet(powerplants_path)
-    POWERPLANT_SCHEMA.validate(powerplants)
-    shapes = gpd.read_parquet(shapes_path)
-    SHAPE_SCHEMA.validate(shapes)
+    powerplants = _schemas.PowerplantSchema.validate(gpd.read_parquet(powerplants_path))
+    shapes = _schemas.ShapeSchema.validate(gpd.read_parquet(shapes_path))
 
     # Coordinate-based operations must use a geographic CRS
     basins = basins.to_crs(crs["geographic"])
@@ -128,7 +124,7 @@ def powerplants_adjust_location(
 
     # Re-validate and save
     powerplants = powerplants.to_crs(crs["geographic"])
-    POWERPLANT_SCHEMA.validate(powerplants)
+    _schemas.PowerplantSchema.validate(powerplants)
     powerplants.to_parquet(adjusted_powerplants_path)
 
 

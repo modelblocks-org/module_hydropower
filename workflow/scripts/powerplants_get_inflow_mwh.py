@@ -4,18 +4,15 @@ import sys
 from calendar import isleap
 from typing import TYPE_CHECKING, Any
 
+import _schemas
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-import pandera.io as io
 from scipy.optimize import minimize
 
 if TYPE_CHECKING:
     snakemake: Any
 sys.stderr = open(snakemake.log[0], "w")
-NATIONAL_GENERATION_SCHEMA = io.from_yaml(snakemake.input.national_generation_schema)
-POWERPLANT_SCHEMA = io.from_yaml(snakemake.input.powerplant_schema)
-
 
 # ---
 # Taken from Euro-Calliope (MIT licensed)s
@@ -69,7 +66,7 @@ def _estimate_bounded_powerplant_inflow(
     ) / inflow_m3_yr.count(axis="index")
 
     national_cap_share_per_powerplant = (
-        plants_by_id["net_generation_capacity_mw"]
+        plants_by_id["output_capacity_mw"]
         .multiply(scaling_factor, axis="index")
         .groupby(plants_by_id["country_id"])
         .transform(lambda x: x / x.sum())
@@ -92,10 +89,10 @@ def _estimate_bounded_powerplant_inflow(
     for plant_id, plant_data in plants_by_id.iterrows():
         inflow_m3_per_hour = inflow_m3_yr[plant_id]
         annual_generation_mwh = annual_powerplant_mwh[plant_id]
-        cf_range = capacity_factor_range[plant_data["powerplant_type"]]
+        cf_range = capacity_factor_range[plant_data["technology"]]
 
         # Obtain MWh, ensuring max-cutoff is not exceeded
-        max_cutoff = plant_data["net_generation_capacity_mw"] * cf_range["max"]
+        max_cutoff = plant_data["output_capacity_mw"] * cf_range["max"]
         max_generation_mwh = max_cutoff * hours_in_year
         if annual_generation_mwh > max_generation_mwh:
             raise ValueError(
@@ -106,7 +103,7 @@ def _estimate_bounded_powerplant_inflow(
         )
 
         # Convert values below the minimum range to zero, to avoid very small numbers
-        zero_cutoff = plant_data["net_generation_capacity_mw"] * cf_range["min"]
+        zero_cutoff = plant_data["output_capacity_mw"] * cf_range["min"]
         inflow_mwh_yr[plant_id] = inflow_mwh_yr[plant_id].where(
             inflow_mwh_yr[plant_id] >= zero_cutoff, 0
         )
@@ -133,8 +130,8 @@ def powerplants_get_inflow_mwh(
     inflow_m3 = pd.read_parquet(inflow_m3_file)
     powerplants = gpd.read_parquet(powerplants_file)
     generation = pd.read_parquet(national_generation_file)
-    POWERPLANT_SCHEMA.validate(powerplants)
-    NATIONAL_GENERATION_SCHEMA.validate(generation)
+    _schemas.PowerplantSchema.validate(powerplants)
+    _schemas.EIAGenerationSchema.validate(generation)
 
     year_results = []
     for year in sorted(inflow_m3.index.year.unique()):

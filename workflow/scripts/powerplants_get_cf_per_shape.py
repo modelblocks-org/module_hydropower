@@ -3,16 +3,15 @@
 import sys
 from typing import TYPE_CHECKING, Any
 
+import _schemas
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import pandera.io as io
 
 if TYPE_CHECKING:
     snakemake: Any
 sys.stderr = open(snakemake.log[0], "w")
-SCHEMA = io.from_yaml(snakemake.input.schema)
 
 
 def _plot_cf_per_shape(cf_file: str, plant_type: str, fig_path: str):
@@ -46,9 +45,9 @@ def _get_capacity_factors_timeseries(
     Returns:
         pd.DataFrame: capacity factor timeseries (row: timestep, column: shape_id).
     """
-    tech_powerplants = powerplants[powerplants["powerplant_type"] == tech]
+    tech_powerplants = powerplants[powerplants["technology"] == tech]
     group = tech_powerplants.groupby(["shape_id"])
-    shape_net_cap = group["net_generation_capacity_mw"].sum()
+    shape_net_cap = group["output_capacity_mw"].sum()
     shape_powerplants = group["powerplant_id"].apply(list)
 
     shape_ids = sorted(tech_powerplants.shape_id.unique())
@@ -67,7 +66,7 @@ def _get_capacity_factors_timeseries(
     cf_timeseries.attrs = {
         "long_name": "Capacity factors",
         "units": None,
-        "powerplant_type": tech,
+        "technology": tech,
     }
     return cf_timeseries
 
@@ -82,7 +81,7 @@ def powerplants_get_cf_per_shape(
     powerplants = gpd.read_parquet(powerplants_file)
     inflow_mwh = pd.read_parquet(inflow_mwh_file)
 
-    SCHEMA.validate(powerplants)
+    _schemas.PowerplantSchema.validate(powerplants)
 
     cap_factors = _get_capacity_factors_timeseries(plant_type, powerplants, inflow_mwh)
     cap_factors.to_parquet(output_path)

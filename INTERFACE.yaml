@@ -9,4 +9,4 @@ results:
     Powerplants statistics after geo-location correction, plus assigned shape_id and country_id.
     Can be used to identify which powerplants were assigned to a given polygon.
   by_shape_id/hydro_dam_cf.parquet: Capacity Factors for hydro dams, per shape.
-  by_shape_id/hydro_run_of_rover_cf.parquet: Capacity Factors for run of river plants, per shape.
+  by_shape_id/hydro_run_of_river_cf.parquet: Capacity Factors for run of river plants, per shape.

@@ -19,7 +19,7 @@ def _plot_adjustment(
     powerplants_path: str,
     adjusted_powerplants_path: str,
     plot_path: str,
-    crs: dict
+    crs: dict,
 ):
     shapes = gpd.read_parquet(shapes_path).to_crs(crs["projected"])
     before = gpd.read_parquet(powerplants_path).to_crs(crs["projected"])
@@ -144,5 +144,5 @@ if __name__ == "__main__":
         powerplants_path=snakemake.input.powerplants,
         adjusted_powerplants_path=snakemake.output.adjusted_powerplants,
         plot_path=snakemake.output.plot,
-        crs=snakemake.params.crs
+        crs=snakemake.params.crs,
     )

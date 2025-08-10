@@ -33,7 +33,7 @@ rule basins_combine_continents:
     output:
         global_file="resources/automatic/hydrobasin_global_{level}.parquet",
         plot=report(
-            "resources/automatic/hydrobasin_global_{level}.png",
+            "resources/automatic/hydrobasin_global_{level}.pdf",
             caption="../report/basins.rst",
             category="Hydropower module",
         ),

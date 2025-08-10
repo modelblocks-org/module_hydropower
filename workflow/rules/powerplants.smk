@@ -14,7 +14,7 @@ rule powerplants_adjust_location:
     output:
         adjusted_powerplants="resources/automatic/{shapes}/adjusted_powerplants.parquet",
         plot=report(
-            "resources/automatic/{shapes}/adjusted_powerplants.png",
+            "resources/automatic/{shapes}/adjusted_powerplants.pdf",
             caption="../report/adjustment.rst",
             category="Hydropower module",
         ),
@@ -77,7 +77,7 @@ rule powerplants_get_cf_per_shape:
     output:
         timeseries="results/{shapes}/aggregated/{plant_type}_cf.parquet",
         figure=report(
-            "results/{shapes}/aggregated/{plant_type}_cf.png",
+            "results/{shapes}/aggregated/{plant_type}_cf.pdf",
             caption="../report/cf_per_shape.rst",
             category="Hydropower module",
         ),

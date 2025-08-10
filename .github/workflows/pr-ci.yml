@@ -7,5 +7,4 @@ on:
 jobs:
   ci-tests:
     uses: calliope-project/data-module-template/.github/workflows/template-pr-ci.yml@latest
-    secrets:
-      CDSAPI_KEY: ${{ secrets.CDSAPI_KEY }}
+    secrets: inherit

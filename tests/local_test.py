@@ -13,47 +13,39 @@ from pathlib import Path
 
 import pytest
 
-
-def setup_workflow(workflow_path: Path, dest_path: Path, case: str):
-    """Copy workflow-relevant folders and files to a temporary location."""
-    if dest_path.exists():
-        shutil.rmtree(dest_path)
-    shutil.copytree(workflow_path / "workflow", dest_path / "workflow")
-    files_to_copy = [
-        ("config/config.yaml", "config/config.yaml"),
-        (
-            f"tests/files/{case}/powerplants.parquet",
-            "resources/user/powerplants.parquet",
-        ),
-        (f"tests/files/{case}/shapes.parquet", "resources/user/shapes.parquet"),
-        (
-            "tests/files/national_generation.parquet",
-            "resources/user/national_generation.parquet",
-        ),
-    ]
-    for src, dest in files_to_copy:
-        dest_file = Path(dest_path / dest)
-        dest_file.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(workflow_path / src, dest_file)
+TECHNOLOGIES = ["reservoir", "run_of_river"]
 
 
-@pytest.fixture(scope="module")
-def module_path():
-    """Parent directory of the project."""
-    return Path(__file__).parent.parent
-
-
-def test_assorted_europe(module_path):
-    """Test a small subset of european nations.
-
-    A buffer of 10km was used to select powerplants.
-    Thus, a few powerplants outside the boundary should be adjusted, and a few dropped.
-    """
-    case = "assorted_europe"
-    tmp_path = Path(f"temp/{case}")
-    setup_workflow(module_path, tmp_path, case)
-    result_file = "results/by_shape_id/hydro_dam_cf.parquet"
-    subprocess.run(
-        f"snakemake --cores 4 {result_file}", shell=True, check=True, cwd=tmp_path
+def build_request(case: str):
+    """Construct a request for the given case."""
+    return " ".join(
+        [f"results/{case}/aggregated/{tech}_cf.parquet" for tech in TECHNOLOGIES]
     )
-    assert Path(tmp_path / result_file).exists()
+
+
+@pytest.mark.parametrize("case", ["MEX", "MNE", "europe"])
+def test_full_run(user_path: Path, case: str):
+    """Test a full request of categories a given setup can give.
+
+    NNN-aggregated-adjusted is often the most holistic case.
+    """
+    request = build_request(case)
+
+    assert subprocess.run(
+        f"snakemake --use-conda --cores 4 --forceall {request}",
+        shell=True,
+        check=True,
+        cwd=user_path.parent.parent,
+    )
+    assert subprocess.run(
+        f"snakemake --use-conda --cores 4 {request} --report results/{case}/report.html",
+        shell=True,
+        check=True,
+        cwd=user_path.parent.parent,
+    )
+    assert subprocess.run(
+        f"snakemake --use-conda --cores 4 {request} --rulegraph | dot -Tpng > results/{case}/rulegraph.png",
+        shell=True,
+        check=True,
+        cwd=user_path.parent.parent,
+    )

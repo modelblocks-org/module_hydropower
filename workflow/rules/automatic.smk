@@ -13,7 +13,7 @@ rule download_eia:
     conda:
         "../envs/shell.yaml"
     shell:
-        r'curl -fSLo {output.path:q} "{params.url}"'
+        r'curl -fsSLo {output.path:q} "{params.url}"'
 
 
 rule download_basin:
@@ -32,7 +32,7 @@ rule download_basin:
     log:
         "logs/download_basin_{continent}.log",
     shell:
-        r'curl -fSLo {output.path:q} "{params.url}"'
+        r'curl -fsSLo {output.path:q} "{params.url}"'
 
 
 rule download_cutout:

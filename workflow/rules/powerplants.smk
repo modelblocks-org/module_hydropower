@@ -14,7 +14,7 @@ rule powerplants_adjust_location:
     output:
         adjusted_powerplants="resources/automatic/{shapes}/adjusted_powerplants.parquet",
         plot=report(
-            "resources/automatic/{shapes}/adjusted_powerplants.pdf",
+            "resources/automatic/{shapes}/adjusted_powerplants.png",
             caption="../report/adjustment.rst",
             category="Hydropower module",
         ),

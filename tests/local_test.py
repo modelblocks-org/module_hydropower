@@ -7,7 +7,6 @@ Important things to consider:
  - Should only be run locally, as they are likely too heavy for Github's CI.
 """
 
-import shutil
 import subprocess
 from pathlib import Path
 

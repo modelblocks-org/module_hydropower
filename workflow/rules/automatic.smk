@@ -13,7 +13,7 @@ rule download_eia:
     conda:
         "../envs/shell.yaml"
     shell:
-        'curl -sSLo {output.path:q} "{params.url}"'
+        r'curl -fSLo {output.path:q} "{params.url}"'
 
 
 rule download_basin:
@@ -24,7 +24,7 @@ rule download_basin:
             continent=wc.continent
         ),
     output:
-        temp("resources/automatic/hydrobasin_{continent}.zip"),
+        path=temp("resources/automatic/hydrobasin_{continent}.zip"),
     wildcard_constraints:
         continent="|".join(internal["continent_codes"]),
     conda:
@@ -32,7 +32,7 @@ rule download_basin:
     log:
         "logs/download_basin_{continent}.log",
     shell:
-        "curl -sSLo {output} '{params.url}' "
+        r'curl -fSLo {output.path:q} "{params.url}"'
 
 
 rule download_cutout:

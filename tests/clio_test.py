@@ -70,8 +70,5 @@ def test_snakemake_integration_testing(integration_path):
         cds_file.write_text(f"url: https://cds.climate.copernicus.eu/api\nkey: {key}\n")
 
     assert subprocess.run(
-        "snakemake --use-conda --cores 1",
-        shell=True,
-        check=True,
-        cwd=integration_path,
+        "snakemake --use-conda --cores 1", shell=True, check=True, cwd=integration_path
     )

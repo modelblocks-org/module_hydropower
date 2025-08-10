@@ -32,6 +32,7 @@ workflow.source_path("scripts/_schemas.py")
 # Run additional configuration validation
 validate_year_config()
 
+
 rule all:
     message:
         "ERROR: Invalid `rule all:` call"

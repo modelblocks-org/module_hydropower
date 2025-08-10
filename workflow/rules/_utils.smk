@@ -1,5 +1,6 @@
 """Utility functions for the module."""
 
+
 def validate_year_config():
     start = config["years"]["start"]
     end = config["years"]["end"]

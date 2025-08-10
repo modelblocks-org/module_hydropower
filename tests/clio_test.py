@@ -12,6 +12,9 @@ from pathlib import Path
 import pytest
 from clio_tools.data_module import ModuleInterface
 
+CDSAPI_KEY = os.getenv("CDSAPI_KEY")
+CDS_FILE = Path.home().joinpath(".cdsapirc")
+
 
 @pytest.fixture(scope="module")
 def module_path():
@@ -62,12 +65,16 @@ def test_snakemake_all_failure(module_path):
     assert "INVALID (missing locally)" in str(process.stderr)
 
 
+@pytest.mark.skipif(
+    not (CDSAPI_KEY or CDS_FILE.exists()),
+    reason="Neither CDSAPI_KEY env var nor ~/.cdsapirc file available.",
+)
 def test_snakemake_integration_testing(integration_path):
     """Run a light-weight test simulating someone using this module."""
-    key = os.getenv("CDSAPI_KEY")
-    cds_file = Path.home().joinpath(".cdsapirc")
-    if key and not cds_file.exists():
-        cds_file.write_text(f"url: https://cds.climate.copernicus.eu/api\nkey: {key}\n")
+    if CDSAPI_KEY and not CDS_FILE.exists():
+        CDS_FILE.write_text(
+            f"url: https://cds.climate.copernicus.eu/api\nkey: {CDSAPI_KEY}\n"
+        )
 
     assert subprocess.run(
         "snakemake --use-conda --cores 1", shell=True, check=True, cwd=integration_path

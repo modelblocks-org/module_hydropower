@@ -1,15 +1,17 @@
 # Module Input-Output structure for automated doc. generation
 resources:
   user:
-    powerplants.parquet: Powerplant statistics.
-    shapes.parquet: Resolution shapes, used for capacity aggregation.
+    "{shapes}/powerplants.parquet": Powerplant statistics.
+    "{shapes}/shapes.parquet": Resolution shapes, used for capacity aggregation.
 results:
-  "statistics/generation.parquet": >
+  "{shapes}/statistics/generation.parquet": >
     National hydropower generation statistics for the requested shapes.
-  "disaggregated/inflow_mwh.parquet": >
+  "{shapes}/disaggregated/inflow_mwh.parquet": >
     Inflow time series for each powerplant in MWh.
     Only includes powerplants that fall within the provided shapes after buffering.
-  "aggregated/reservoir_cf.parquet": >
+  "{shapes}/aggregated/reservoir_cf.parquet": >
     Capacity Factors of hydropower reservoirs aggregated to shapes.
-  "aggregated/run_of_river_cf.parquet": >
+  "{shapes}/aggregated/run_of_river_cf.parquet": >
     Capacity Factors of run of river plants aggregated to shapes.
+wildcards:
+  shapes: name of the provided shapes case.

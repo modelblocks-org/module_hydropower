@@ -5,6 +5,7 @@ It should be updated through our templating functions.
 """
 
 import os
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -16,6 +17,21 @@ from clio_tools.data_module import ModuleInterface
 def module_path():
     """Parent directory of the project."""
     return Path(__file__).parent.parent
+
+
+@pytest.fixture(scope="module")
+def integration_path(user_path: Path, module_path: Path):
+    """Ensures the minimal integration test is ready."""
+    integration_dir = Path(module_path / "tests/integration")
+    if integration_dir.exists():  # clean everything
+        shutil.rmtree(integration_dir / "results/", ignore_errors=True)
+    user_integ_dir = integration_dir / "results/integration_test/resources/user/"
+    files_to_copy = ["MNE/powerplants.parquet", "MNE/shapes.parquet"]
+    for file in files_to_copy:
+        destination_file = Path(user_integ_dir / file)
+        destination_file.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(user_path / file, destination_file)
+    return integration_dir
 
 
 def test_interface_file(module_path):
@@ -46,7 +62,7 @@ def test_snakemake_all_failure(module_path):
     assert "INVALID (missing locally)" in str(process.stderr)
 
 
-def test_snakemake_integration_testing(module_path):
+def test_snakemake_integration_testing(integration_path):
     """Run a light-weight test simulating someone using this module."""
     key = os.getenv("CDSAPI_KEY")
     cds_file = Path.home().joinpath(".cdsapirc")
@@ -57,5 +73,5 @@ def test_snakemake_integration_testing(module_path):
         "snakemake --use-conda --cores 1",
         shell=True,
         check=True,
-        cwd=module_path / "tests/integration",
+        cwd=integration_path,
     )

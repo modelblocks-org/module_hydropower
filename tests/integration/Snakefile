@@ -2,9 +2,6 @@
 configfile: workflow.source_path("./test_config.yaml")
 
 
-# The resources/ folder already includes files for a small generic test case using Montenegro
-
-
 # Import the module and configure it.
 # `snakefile:` specifies the module. It can use file paths and special github(...) / gitlab(...) markers
 module module_hydropower:
@@ -26,5 +23,5 @@ rule all:
         "Generate CF timeseries for a small country."
     default_target: True
     input:
-        "results/integration_test/results/by_shape_id/hydro_dam_cf.parquet",
-        "results/integration_test/results/by_shape_id/hydro_run_of_river_cf.parquet",
+        "results/integration_test/results/MNE/aggregated/reservoir_cf.parquet",
+        "results/integration_test/results/MNE/aggregated/run_of_river_cf.parquet",

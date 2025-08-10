@@ -36,7 +36,7 @@ def runoff_cutout(input_shapes, era5_crs, start_year, end_year, output_netcdf):
         module=["era5"],
         x=slice(bounds[0], bounds[2]),
         y=slice(bounds[1], bounds[3]),
-        time=slice(f"{start_year}-01-01", f"{end_year}-12-31"),
+        time=slice(f"{start_year}-01-01", f"{end_year - 1}-12-31"),
     )
     cutout.prepare(features=["runoff"])
     assert cutout.crs == era5_crs

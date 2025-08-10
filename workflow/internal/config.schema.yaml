@@ -9,13 +9,17 @@ properties:
       The higher the number, the higher the basins resolution.
     type: string
   years:
-    description: Initial and final year to include in the data.
+    description: >
+      Year to include in the data, up to the start of the end year.
+      E.g.: `start: 2010` and `end: 2015` will include 2010, 2011, 2012, 2013 and 2014.
     type: object
     properties:
       start:
+        description: Start year of data.
         type: integer
         minimum: 0
       end:
+        description: Cutoff year of data (not included!).
         type: integer
         minimum: 0
     required:

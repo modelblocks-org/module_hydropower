@@ -18,6 +18,7 @@ with open(workflow.source_path("internal/settings.yaml"), "r") as f:
 
 
 # Add all your includes here.
+include: "rules/_utils.smk"
 include: "rules/automatic.smk"
 include: "rules/statistics.smk"
 include: "rules/basins.smk"
@@ -28,6 +29,8 @@ include: "rules/powerplants.smk"
 workflow.source_path("scripts/_plots.py")
 workflow.source_path("scripts/_schemas.py")
 
+# Run additional configuration validation
+validate_year_config()
 
 rule all:
     message:

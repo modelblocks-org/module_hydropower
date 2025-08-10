@@ -4,6 +4,8 @@
 rule prepare_statistics:
     message:
         "Get EIA annual country hydropower generation statistics."
+    params:
+        years=config["years"],
     input:
         shapes="resources/user/{shapes}/shapes.parquet",
         eia_bulk="resources/automatic/downloads/EIA-INTL.txt",

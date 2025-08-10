@@ -58,7 +58,12 @@ def _estimate_bounded_powerplant_inflow(
     """
     inflow_m3_yr = inflow_m3[inflow_m3.index.year == year]
     generation_yr = national_generation[national_generation.year == year]
-    plants_by_id = powerplants.set_index("powerplant_id")
+    plants_by_id = powerplants.set_index("powerplant_id").copy()
+
+    # Deactivate facilities that have not come online for this year
+    plants_by_id["output_capacity_mw"] = plants_by_id["output_capacity_mw"].where(
+        (plants_by_id["start_year"] <= year) & (year < plants_by_id["end_year"]), 0
+    )
 
     # Re-scale capacity share to account for erroneous zero timesteps in the inflow data
     # TODO: accurately describe the reasoning behind this
@@ -77,7 +82,6 @@ def _estimate_bounded_powerplant_inflow(
     assert annual_national_generation.index.is_unique, (
         f"Country data for {year} is not unique!"
     )
-
     annual_powerplant_mwh = plants_by_id.apply(
         lambda x: annual_national_generation[x.country_id]
         * national_cap_share_per_powerplant[x.name],

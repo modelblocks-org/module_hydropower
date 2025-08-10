@@ -53,12 +53,15 @@ def _get_country_hydro_generation(eia_df: pd.DataFrame, country_a3: str):
     return country_generation
 
 
-def prepare(input_shapes: str, input_eia_bulk: str, output_generation: str):
+def prepare(
+    input_shapes: str, input_eia_bulk: str, years: dict, output_generation: str
+):
     """Generate a file with annual hydropower generation statistics per country.
 
     Args:
         input_shapes (str): shapes parquet file.
         input_eia_bulk (str): eia bulk txt database.
+        years (dict): dictionary with start/end years.
         output_generation (str): hydropower generation parquet file.
     """
     shapes = gpd.read_parquet(input_shapes)
@@ -67,17 +70,19 @@ def prepare(input_shapes: str, input_eia_bulk: str, output_generation: str):
     eia_stats = pd.read_json(input_eia_bulk, lines=True)
 
     results = []
-    missing = []
     for country in shapes["country_id"].unique():
         try:
             results.append(_get_country_hydro_generation(eia_stats, country))
-        except (ValueError, KeyError, IndexError):
-            print(f"Failed to extract statistics for {country}")
-            missing.append(country)
-
+        except (ValueError, KeyError, IndexError) as ex:
+            raise ValueError(f"Failed to extract statistics for {country}") from ex
     statistics = pd.concat(results, ignore_index=True).reset_index(drop=True)
+
+    # Filter requested data and validate for completeness
+    statistics["year"] = statistics["year"].astype(int)
+    statistics = statistics[
+        statistics["year"].isin(range(years["start"], years["end"]))
+    ]
     statistics = _schemas.EIAGenerationSchema.validate(statistics)
-    statistics.attrs["missing_countries"] = missing
     statistics.to_parquet(output_generation)
 
 
@@ -86,9 +91,8 @@ def plot(
 ):
     """Plot per-country evolution of hydropower generation over time."""
     df_cats = pd.read_parquet(input_generation)
-    missing_countries = df_cats.attrs["missing_countries"]
 
-    countries = set(df_cats["country_id"].unique()) | set(missing_countries)
+    countries = set(df_cats["country_id"].unique())
     n_countries = len(countries)
 
     fig, axes = plt.subplots(
@@ -143,6 +147,7 @@ if __name__ == "__main__":
     prepare(
         input_shapes=snakemake.input.shapes,
         input_eia_bulk=snakemake.input.eia_bulk,
+        years=snakemake.params.years,
         output_generation=snakemake.output.generation,
     )
     plot(

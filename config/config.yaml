@@ -1,8 +1,8 @@
 # A minimal example of how to configure this module
 pfafstetter_level: "06"
-years:
-  start: 2015
-  end: 2015
+years:  # Include 2011, 2012 data
+  start: 2011
+  end: 2013
 powerplants:
   technology_mapping:
     run_of_river: "run of river"

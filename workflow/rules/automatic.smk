@@ -47,7 +47,7 @@ rule download_cutout:
     output:
         cutout="resources/automatic/{shapes}/cutout.nc",
         plot=report(
-            "resources/automatic/{shapes}/cutout.pdf",
+            "resources/automatic/{shapes}/cutout.png",
             caption="../report/cutout.rst",
             category="Hydropower module",
         ),

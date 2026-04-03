@@ -103,9 +103,7 @@ def powerplants_get_pu_per_shape(
     _schemas.PowerplantSchema.validate(powerplants)
 
     user_plant_name = technology_mapping[plant_type]
-    cap_factors = _get_pu_factor_timeseries(
-        user_plant_name, powerplants, inflow_mwh
-    )
+    cap_factors = _get_pu_factor_timeseries(user_plant_name, powerplants, inflow_mwh)
     cap_factors.to_parquet(output_path)
 
 

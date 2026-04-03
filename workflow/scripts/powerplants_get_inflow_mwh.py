@@ -143,9 +143,7 @@ def powerplants_get_inflow_mwh(
 
     # Match user technology names with those in our internal settings
     # and process only relevant technologies
-    remapped_pu_range = {
-        v: pu_factor_range[k] for k, v in technology_mapping.items()
-    }
+    remapped_pu_range = {v: pu_factor_range[k] for k, v in technology_mapping.items()}
     powerplants = powerplants[
         powerplants["technology"].isin(technology_mapping.values())
     ]

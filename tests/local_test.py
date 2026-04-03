@@ -18,7 +18,7 @@ TECHNOLOGIES = ["reservoir", "run_of_river"]
 def build_request(case: str):
     """Construct a request for the given case."""
     return " ".join(
-        [f"results/{case}/aggregated/{tech}_cf.parquet" for tech in TECHNOLOGIES]
+        [f"results/{case}/aggregated/{tech}_inflow_pu.parquet" for tech in TECHNOLOGIES]
     )
 
 

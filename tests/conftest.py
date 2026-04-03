@@ -7,7 +7,7 @@ from urllib.request import urlretrieve
 
 import pytest
 
-TEST_FILES = "https://www.dropbox.com/scl/fi/nq4zapmr6w6ntknz97kjq/test_suite.zip?rlkey=52c73fbxk79mk8syznz0fgzx9&st=k0jqhfhi&dl=1"
+TEST_FILES = "https://zenodo.org/records/19401947/files/test_suite.zip?download=1"
 
 
 @pytest.fixture(scope="session")

@@ -1,6 +1,8 @@
 """Aggregated hydropower generation data at a country level."""
 
+import io
 import sys
+import zipfile
 from typing import TYPE_CHECKING, Any
 
 import _plots
@@ -9,11 +11,9 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from matplotlib.ticker import MaxNLocator
 
 if TYPE_CHECKING:
     snakemake: Any
-sys.stderr = open(snakemake.log[0], "w", buffering=1)
 
 CAT_ID = {
     "hydropower": 33
@@ -60,14 +60,16 @@ def prepare(
 
     Args:
         input_shapes (str): shapes parquet file.
-        input_eia_bulk (str): eia bulk txt database.
+        input_eia_bulk (str): EIA bulk zip archive containing INTL.txt.
         years (dict): dictionary with start/end years.
         output_generation (str): hydropower generation parquet file.
     """
     shapes = gpd.read_parquet(input_shapes)
     shapes = _schemas.ShapeSchema.validate(shapes)
 
-    eia_stats = pd.read_json(input_eia_bulk, lines=True)
+    with zipfile.ZipFile(input_eia_bulk) as zf:
+        with zf.open("INTL.txt") as f:
+            eia_stats = pd.read_json(io.TextIOWrapper(f, encoding="utf-8"), lines=True)
 
     results = []
     for country in shapes["country_id"].unique():
@@ -87,63 +89,78 @@ def prepare(
 
 
 def plot(
-    input_generation: str, output_plot: str, figsize: tuple[float, float] = (12, 6)
+    input_generation: str,
+    output_plot: str,
+    *,
+    min_fig_width: float = 5,
+    width_per_year: float = 0.35,
+    row_height: float = 3.0,
+    base_height: float = 0.8,
+    x_tick_rotation: float = 45,
+    legend_anchor_x: float = 1.02,
 ):
     """Plot per-country evolution of hydropower generation over time."""
     df_cats = pd.read_parquet(input_generation)
 
-    countries = set(df_cats["country_id"].unique())
-    n_countries = len(countries)
+    countries = sorted(df_cats["country_id"].dropna().unique())
+    years = sorted(df_cats["year"].dropna().unique())
+
+    n_countries = max(1, len(countries))
+    n_years = max(1, len(years))
+
+    fig_width = max(min_fig_width, width_per_year * n_years)
+    fig_height = base_height + row_height * n_countries
 
     fig, axes = plt.subplots(
         nrows=n_countries,
         ncols=1,
-        figsize=(figsize[0], figsize[1] * n_countries),
-        sharex=False,
-        tight_layout=True,
+        figsize=(fig_width, fig_height),
+        squeeze=False,
+        layout="constrained",
     )
-    if n_countries == 1:
-        axes = [axes]
+    axes = axes.ravel()
 
-    for ax, country in zip(axes, sorted(countries)):
-        cats = df_cats[df_cats["country_id"] == country]
+    if not countries:
+        _plots.draw_empty(axes[0], "No countries")
+    else:
+        for ax, country in zip(axes, countries):
+            cats = df_cats[df_cats["country_id"] == country]
 
-        if cats.empty:
-            _plots.draw_empty(ax, country)
+            if cats.empty:
+                _plots.draw_empty(ax, str(country))
+                continue
 
-        else:
-            pivot = (
-                cats.pivot_table(
-                    index="year",
-                    columns="category",
-                    values="generation_mwh",
-                    aggfunc="sum",
-                )
-                .fillna(0)
-                .sort_index()
-            )
-            _ = pivot.plot(kind="bar", stacked=True, ax=ax, legend=False, zorder=1)
+            pivot = cats.pivot_table(
+                index="year",
+                columns="category",
+                values="generation_mwh",
+                aggfunc="sum",
+                fill_value=0,
+            ).sort_index()
+
+            pivot.plot.bar(ax=ax, stacked=True, legend=False, zorder=1)
 
             handles, labels = ax.get_legend_handles_labels()
             ax.legend(
                 handles[::-1],
                 labels[::-1],
                 title="Category",
-                bbox_to_anchor=(1.02, 0.5),
+                bbox_to_anchor=(legend_anchor_x, 0.5),
                 loc="center left",
                 borderaxespad=0,
             )
 
-            ax.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
-            ax.tick_params(axis="x", rotation=45)
-            ax.set_title(country)
-            ax.set_ylabel("Generation ($MWh$)")
+            ax.tick_params(axis="x", labelrotation=x_tick_rotation)
+            ax.set_title(str(country), fontweight="bold")
+            ax.set_ylabel(r"Generation ($MWh$)")
             ax.set_xlabel("Year")
 
-    fig.savefig(output_plot, bbox_inches="tight")
+    fig.savefig(output_plot, bbox_inches="tight", pad_inches="layout")
+    plt.close(fig)
 
 
 if __name__ == "__main__":
+    sys.stderr = open(snakemake.log[0], "w", buffering=1)
     prepare(
         input_shapes=snakemake.input.shapes,
         input_eia_bulk=snakemake.input.eia_bulk,

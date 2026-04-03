@@ -1,7 +1,8 @@
-name: default
+name: hydropower
 channels:
-  - conda-forge
-  - nodefaults
+- conda-forge
+- bioconda
+- nodefaults
 dependencies:
   - atlite = 0.4.0
   - geopandas = 1.0.1

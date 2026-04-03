@@ -14,4 +14,4 @@ powerplants:
 crs:
   projected: "epsg:3857"
   geographic: "epsg:4326"
-smoothing_hours: "168h"
+smoothing_hours: "72h"

@@ -1,9 +1,14 @@
+# A lightweight configuration.
+# Designed to minimise timeouts during automated testing on Github
 module_hydropower:
   pfafstetter_level: "01"  # Use an extremely coarse basin resolution
   years:
     start: 2015
-    end: 2015
+    end: 2016
   powerplants:
+    technology_mapping:
+      run_of_river: "run of river"
+      reservoir: "reservoir"
     basin_adjustment:
       buffer_radius: 400  # epsg:3857 is in meters
       max_outside: 0

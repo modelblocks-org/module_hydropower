@@ -9,13 +9,17 @@ properties:
       The higher the number, the higher the basins resolution.
     type: string
   years:
-    description: Initial and final year to include in the data.
+    description: >
+      Year to include in the data, up to the start of the end year.
+      E.g.: `start: 2010` and `end: 2015` will include 2010, 2011, 2012, 2013 and 2014.
     type: object
     properties:
       start:
+        description: Start year of data.
         type: integer
         minimum: 0
       end:
+        description: Cutoff year of data (not included!).
         type: integer
         minimum: 0
     required:
@@ -26,6 +30,22 @@ properties:
     description: Powerplant related settings.
     type: object
     properties:
+      technology_mapping:
+        description: >
+          Maps internal names to user-provided names in powerplants files, to make integration smoother.
+          These names will be expected in the 'technology' column of the powerplants file, and will be
+          used in the resulting files too.
+        type: object
+        properties:
+          run_of_river:
+            description: Name used for run of river powerplants.
+            type: string
+          reservoir:
+            description: Name used for reservoir powerplants.
+            type: string
+        required:
+          - run_of_river
+          - reservoir
       basin_adjustment:
         description: >
           Powerplant location may not always match that of the basins or shape files.
@@ -56,6 +76,7 @@ properties:
         additionalProperties: false  # Ensures no extra properties in "basin_adjustment"
     required:
       - basin_adjustment
+      - technology_mapping
     additionalProperties: false  # Ensures no extra properties in "powerplants"
   crs:
     description: Coordinate reference system settings in the form 'epsg:xxxx'.

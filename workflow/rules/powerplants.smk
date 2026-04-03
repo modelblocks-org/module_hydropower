@@ -8,24 +8,20 @@ rule powerplants_adjust_location:
         crs=config["crs"],
         basin_adjustment=config["powerplants"]["basin_adjustment"],
     input:
-        basins=ancient(
-            f"resources/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet"
-        ),
-        powerplants="resources/user/powerplants.parquet",
-        powerplant_schema=workflow.source_path("../internal/powerplant.schema.yaml"),
-        shapes="resources/user/shapes.parquet",
-        shape_schema=workflow.source_path("../internal/shape.schema.yaml"),
+        basins=f"<resources>/automatic/hydrobasins/global_{config["pfafstetter_level"]}.parquet",
+        powerplants="<powerplants>",
+        shapes="<shapes>",
     output:
-        adjusted_powerplants="results/adjusted_powerplants.parquet",
+        adjusted_powerplants="<resources>/automatic/shapes/{shapes}/adjusted_powerplants.parquet",
         plot=report(
-            "results/adjusted_powerplants.png",
+            "<resources>/automatic/shapes/{shapes}/adjusted_powerplants.png",
             caption="../report/adjustment.rst",
             category="Hydropower module",
         ),
     log:
-        "logs/powerplants_adjust_location.log",
+        "<logs>/{shapes}/powerplants_adjust_location.log",
     conda:
-        "../envs/default.yaml"
+        "../envs/hydropower.yaml"
     script:
         "../scripts/powerplants_adjust_location.py"
 
@@ -36,20 +32,16 @@ rule powerplants_get_inflow_m3:
     params:
         smoothing_hours=config["smoothing_hours"],
     input:
-        adjusted_powerplants="results/adjusted_powerplants.parquet",
-        basins=ancient(
-            f"resources/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet"
-        ),
-        powerplant_schema=workflow.source_path("../internal/powerplant.schema.yaml"),
-        shapes="resources/user/shapes.parquet",
-        shape_schema=workflow.source_path("../internal/shape.schema.yaml"),
-        cutout=ancient("resources/automatic/cutout.nc"),
+        adjusted_powerplants=rules.powerplants_adjust_location.output.adjusted_powerplants,
+        basins=f"<resources>/automatic/hydrobasins/global_{config["pfafstetter_level"]}.parquet",
+        shapes="<shapes>",
+        cutout=rules.download_cutout.output.cutout,
     output:
-        inflow="results/by_powerplant_id/inflow_m3.parquet",
+        inflow="<resources>/automatic/shapes/{shapes}/disaggregated/inflow_m3.parquet",
     log:
-        "logs/powerplants_get_inflow_m3.log",
+        "<logs>/{shapes}/powerplants_get_inflow_m3.log",
     conda:
-        "../envs/default.yaml"
+        "../envs/hydropower.yaml"
     script:
         "../scripts/powerplants_get_inflow_m3.py"
 
@@ -58,44 +50,42 @@ rule powerplants_get_inflow_mwh:
     message:
         "Calculating powerplant generation in MWh and applying corrections using historical data."
     params:
-        capacity_factor_range=internal["capacity_factor_range"],
+        pu_factor_range=internal["pu_factor_range"],
+        technology_mapping=config["powerplants"]["technology_mapping"],
     input:
-        inflow_m3="results/by_powerplant_id/inflow_m3.parquet",
-        adjusted_powerplants="results/adjusted_powerplants.parquet",
-        powerplant_schema=workflow.source_path("../internal/powerplant.schema.yaml"),
-        national_generation="resources/user/national_generation.parquet",
-        national_generation_schema=workflow.source_path(
-            "../internal/national_generation.schema.yaml"
-        ),
+        inflow_m3=rules.powerplants_get_inflow_m3.output.inflow,
+        adjusted_powerplants=rules.powerplants_adjust_location.output.adjusted_powerplants,
+        statistics="<statistics>",
     output:
-        inflow_mwh="results/by_powerplant_id/inflow_mwh.parquet",
+        inflow_mwh="<disaggregated_inflow>",
     log:
-        "logs/powerplants_get_inflow_mwh.log",
+        "<logs>/{shapes}/powerplants_get_inflow_mwh.log",
     conda:
-        "../envs/default.yaml"
+        "../envs/hydropower.yaml"
     script:
         "../scripts/powerplants_get_inflow_mwh.py"
 
 
-rule powerplants_get_cf_per_shape:
+rule powerplants_get_pu_per_shape:
     message:
-        "Calculating capacity factor timeseries per shape for '{wildcards.plant_type}'."
+        "Calculating aggregated per-unit timeseries per shape for '{wildcards.plant_type}'."
+    params:
+        technology_mapping=config["powerplants"]["technology_mapping"],
     input:
-        adjusted_powerplants="results/adjusted_powerplants.parquet",
-        inflow_mwh="results/by_powerplant_id/inflow_mwh.parquet",
-        schema=workflow.source_path("../internal/powerplant.schema.yaml"),
+        adjusted_powerplants=rules.powerplants_adjust_location.output.adjusted_powerplants,
+        inflow_mwh="<disaggregated_inflow>",
     output:
-        timeseries="results/by_shape_id/{plant_type}_cf.parquet",
+        timeseries="<aggregated_inflow_pu>",
         figure=report(
-            "results/by_shape_id/{plant_type}_cf.png",
-            caption="../report/cf_per_shape.rst",
+            "<results>/{shapes}/aggregated/{plant_type}_inflow_pu.pdf",
+            caption="../report/pu_per_shape.rst",
             category="Hydropower module",
         ),
     wildcard_constraints:
-        plant_type="|".join(["hydro_run_of_river", "hydro_dam"]),
+        plant_type="|".join(["run_of_river", "reservoir"]),
     log:
-        "logs/powerplants_get_cf_per_shape_{plant_type}.log",
+        "<logs>/{shapes}/powerplants_get_pu_per_shape_{plant_type}.log",
     conda:
-        "../envs/default.yaml"
+        "../envs/hydropower.yaml"
     script:
-        "../scripts/powerplants_get_cf_per_shape.py"
+        "../scripts/powerplants_get_pu_per_shape.py"

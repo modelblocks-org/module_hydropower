@@ -1,12 +1,39 @@
 # Module Input-Output structure for automated doc. generation
-resources:
-  user:
-    national_generation.parquet: Annual hydropower generation statistics per country.
-    powerplants.parquet: Powerplant statistics.
-    shapes.parquet: Resolution shapes, used for capacity aggregation.
-results:
-  adjusted_powerplants.parquet: >
-    Powerplants statistics after geo-location correction, plus assigned shape_id and country_id.
-    Can be used to identify which powerplants were assigned to a given polygon.
-  by_shape_id/hydro_dam_cf.parquet: Capacity Factors for hydro dams, per shape.
-  by_shape_id/hydro_run_of_rover_cf.parquet: Capacity Factors for run of river plants, per shape.
+pathvars:
+  snakemake_defaults:
+    logs:
+      default: "<logs>"
+      description: location of rule log files.
+    resources:
+      default: "<resources>"
+      description: "location of module resource files."
+    results:
+      default: "<results>"
+      description: "location of module results."
+  user_resources:
+    shapes:
+      default: "<resources>/user/{shapes}/shapes.parquet"
+      description: |
+        Region-specific polygons to process during aggregation.
+        See the schemas in `workflow/scripts/_schemas.py` for more information.
+    powerplants:
+      default: "<resources>/user/{shapes}/powerplants.parquet"
+      description: |
+        Powerplant statistics.
+        See the schemas in `workflow/scripts/_schemas.py` for more information.
+  results:
+    statistics:
+      default: "<results>/{shapes}/statistics/generation.parquet"
+      description: National hydropower generation statistics for the requested shapes.
+    disaggregated_inflow:
+      default: "<results>/{shapes}/disaggregated/inflow_mwh.parquet"
+      description: >
+        Inflow time series for each powerplant in MWh.
+        Only includes powerplants that fall within the provided shapes and buffer distance.
+    aggregated_inflow_pu:
+      default: "<results>/{shapes}/aggregated/{plant_type}_inflow_pu.parquet"
+      description: >
+        Inflow per-unit (PU) of capacity timeseries of a hydropower plant type, per shapes.
+wildcards:
+  shapes: name of the provided shapes case.
+  plant_type: Either 'run_of_river' or 'reservoir'.

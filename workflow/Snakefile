@@ -2,7 +2,20 @@ import yaml
 
 from snakemake.utils import min_version, validate
 
-min_version("8.10")
+min_version("9.19")
+
+
+# !!!!! IMPORTANT !!!!!
+# Define pathvars for all user resource files and result files
+# This allows users to re-wire how the module is used in their workflow with ease.
+pathvars:
+    # User resources
+    shapes="<resources>/user/{shapes}/shapes.parquet",
+    powerplants="<resources>/user/{shapes}/powerplants.parquet",
+    # Module results
+    statistics="<results>/{shapes}/statistics/generation.parquet",
+    disaggregated_inflow="<results>/{shapes}/disaggregated/inflow_mwh.parquet",
+    aggregated_inflow_pu="<results>/{shapes}/aggregated/{plant_type}_inflow_pu.parquet",
 
 
 # Load the example configuration. This will be overridden by users.
@@ -18,9 +31,19 @@ with open(workflow.source_path("internal/settings.yaml"), "r") as f:
 
 
 # Add all your includes here.
+include: "rules/_utils.smk"
 include: "rules/automatic.smk"
+include: "rules/statistics.smk"
 include: "rules/basins.smk"
 include: "rules/powerplants.smk"
+
+
+# Add all files to be delivered alongside the workflow here
+workflow.source_path("scripts/_plots.py")
+workflow.source_path("scripts/_schemas.py")
+
+# Run additional configuration validation
+validate_year_config()
 
 
 rule all:
@@ -30,7 +53,7 @@ rule all:
     output:
         "INVALID",
     log:
-        stderr="logs/all.stderr",
+        stderr="<logs>/all.stderr",
     conda:
         "envs/shell.yaml"
     shell:

@@ -7,14 +7,14 @@ rule download_eia:
     params:
         url=internal["resources"]["automatic"]["EIA"],
     output:
-        path="<resources>/automatic/downloads/EIA-INTL.txt",
+        zipfile="<resources>/automatic/downloads/EIA-INTL.zip",
     log:
         "<logs>/download_eia.log",
     localrule: True
     conda:
         "../envs/shell.yaml"
     shell:
-        r'curl -fsSLo {output.path:q} "{params.url}"'
+        r'curl -fsSLo {output.zipfile:q} "{params.url}"'
 
 
 rule download_basin:

@@ -8,7 +8,7 @@ rule prepare_statistics:
         years=config["years"],
     input:
         shapes="<shapes>",
-        eia_bulk="<resources>/automatic/downloads/EIA-INTL.txt",
+        eia_bulk=rules.download_eia.output.zipfile,
     output:
         generation="<statistics>",
         plot="<results>/{shapes}/statistics/generation.pdf",

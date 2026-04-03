@@ -2,7 +2,7 @@
 resources:
   automatic:
     # Links for automatically downloaded files
-    EIA: "https://zenodo.org/records/16779120/files/EIA-INTL.txt"
+    EIA: "https://zenodo.org/records/19401947/files/EIA-INTL.zip?download=1"
     HydroBASINS: https://data.hydrosheds.org/file/hydrobasins/standard/hybas_{continent}_lev01-12_v1c.zip
 continent_codes: ["af", "ar", "as", "au", "eu", "gr", "na", "sa", "si"]
 pfafstetter_level_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]

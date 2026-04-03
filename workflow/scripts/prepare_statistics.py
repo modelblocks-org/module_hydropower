@@ -1,6 +1,8 @@
 """Aggregated hydropower generation data at a country level."""
 
+import io
 import sys
+import zipfile
 from typing import TYPE_CHECKING, Any
 
 import _plots
@@ -9,7 +11,6 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from matplotlib.ticker import MaxNLocator
 
 if TYPE_CHECKING:
     snakemake: Any
@@ -59,14 +60,16 @@ def prepare(
 
     Args:
         input_shapes (str): shapes parquet file.
-        input_eia_bulk (str): eia bulk txt database.
+        input_eia_bulk (str): EIA bulk zip archive containing INTL.txt.
         years (dict): dictionary with start/end years.
         output_generation (str): hydropower generation parquet file.
     """
     shapes = gpd.read_parquet(input_shapes)
     shapes = _schemas.ShapeSchema.validate(shapes)
 
-    eia_stats = pd.read_json(input_eia_bulk, lines=True)
+    with zipfile.ZipFile(input_eia_bulk) as zf:
+        with zf.open("INTL.txt") as f:
+            eia_stats = pd.read_json(io.TextIOWrapper(f, encoding="utf-8"), lines=True)
 
     results = []
     for country in shapes["country_id"].unique():

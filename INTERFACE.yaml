@@ -1,17 +1,42 @@
 # Module Input-Output structure for automated doc. generation
-resources:
-  user:
-    "{shapes}/powerplants.parquet": Powerplant statistics.
-    "{shapes}/shapes.parquet": Resolution shapes, used for capacity aggregation.
-results:
-  "{shapes}/statistics/generation.parquet": >
-    National hydropower generation statistics for the requested shapes.
-  "{shapes}/disaggregated/inflow_mwh.parquet": >
-    Inflow time series for each powerplant in MWh.
-    Only includes powerplants that fall within the provided shapes after buffering.
-  "{shapes}/aggregated/reservoir_cf.parquet": >
-    Capacity Factors of hydropower reservoirs aggregated to shapes.
-  "{shapes}/aggregated/run_of_river_cf.parquet": >
-    Capacity Factors of run of river plants aggregated to shapes.
+pathvars:
+  snakemake_defaults:
+    logs:
+      default: "<logs>"
+      description: location of rule log files.
+    resources:
+      default: "<resources>"
+      description: "location of module resource files."
+    results:
+      default: "<results>"
+      description: "location of module results."
+  user_resources:
+    shapes:
+      default: "<resources>/user/{shapes}/shapes.parquet"
+      description: |
+        Region-specific polygons to process during capacity aggregation.
+        See the schemas in `workflow/scripts/_schemas.py` for more information.
+    powerplants:
+      default: "<resources>/user/{shapes}/powerplants.parquet"
+      description: |
+        Powerplant statistics.
+        See the schemas in `workflow/scripts/_schemas.py` for more information.
+  results:
+    statistics:
+      default: "<results>/{shapes}/statistics/generation.parquet"
+      description: National hydropower generation statistics for the requested shapes.
+    disaggregated_inflow:
+      default: "<results>/{shapes}/disaggregated/inflow_mwh.parquet"
+      description: >
+        Inflow time series for each powerplant in MWh.
+        Only includes powerplants that fall within the provided shapes and buffer distance.
+    aggregated_reservoir_cf:
+      default: "<results>/{shapes}/aggregated/reservoir_cf.parquet"
+      description: >
+        Capacity Factors of hydropower reservoirs aggregated to shapes.
+    aggregated_ror_cf:
+      default: "<results>/{shapes}/aggregated/run_of_river_cf.parquet"
+      description: >
+        Capacity Factors of run of river plants aggregated to shapes.
 wildcards:
   shapes: name of the provided shapes case.

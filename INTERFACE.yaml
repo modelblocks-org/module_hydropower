@@ -30,13 +30,10 @@ pathvars:
       description: >
         Inflow time series for each powerplant in MWh.
         Only includes powerplants that fall within the provided shapes and buffer distance.
-    aggregated_reservoir_cf:
-      default: "<results>/{shapes}/aggregated/reservoir_cf.parquet"
+    aggregated_cf_timeseries:
+      default: "<results>/{shapes}/aggregated/{plant_type}_cf.parquet"
       description: >
-        Capacity Factors of hydropower reservoirs aggregated to shapes.
-    aggregated_ror_cf:
-      default: "<results>/{shapes}/aggregated/run_of_river_cf.parquet"
-      description: >
-        Capacity Factors of run of river plants aggregated to shapes.
+        Capacity factor (CF) timeseries of a hydropower plant type, aggregated to shapes.
 wildcards:
   shapes: name of the provided shapes case.
+  plant_type: Either 'run_of_river' or 'reservoir'.

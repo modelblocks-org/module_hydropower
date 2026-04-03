@@ -8,20 +8,20 @@ rule powerplants_adjust_location:
         crs=config["crs"],
         basin_adjustment=config["powerplants"]["basin_adjustment"],
     input:
-        basins=f"resources/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet",
-        powerplants="resources/user/{shapes}/powerplants.parquet",
-        shapes="resources/user/{shapes}/shapes.parquet",
+        basins=f"<resources>/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet",
+        powerplants="<powerplants>",
+        shapes="<shapes>",
     output:
-        adjusted_powerplants="resources/automatic/{shapes}/adjusted_powerplants.parquet",
+        adjusted_powerplants="<resources>/automatic/{shapes}/adjusted_powerplants.parquet",
         plot=report(
-            "resources/automatic/{shapes}/adjusted_powerplants.png",
+            "<resources>/automatic/{shapes}/adjusted_powerplants.png",
             caption="../report/adjustment.rst",
             category="Hydropower module",
         ),
     log:
-        "logs/{shapes}/powerplants_adjust_location.log",
+        "<logs>/{shapes}/powerplants_adjust_location.log",
     conda:
-        "../envs/default.yaml"
+        "../envs/hydropower.yaml"
     script:
         "../scripts/powerplants_adjust_location.py"
 
@@ -32,16 +32,16 @@ rule powerplants_get_inflow_m3:
     params:
         smoothing_hours=config["smoothing_hours"],
     input:
-        adjusted_powerplants="resources/automatic/{shapes}/adjusted_powerplants.parquet",
-        basins=f"resources/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet",
-        shapes="resources/user/{shapes}/shapes.parquet",
-        cutout="resources/automatic/{shapes}/cutout.nc",
+        adjusted_powerplants="<resources>/automatic/{shapes}/adjusted_powerplants.parquet",
+        basins=f"<resources>/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet",
+        shapes="<shapes>",
+        cutout="<resources>/automatic/{shapes}/cutout.nc",
     output:
-        inflow="resources/automatic/{shapes}/disaggregated/inflow_m3.parquet",
+        inflow="<resources>/automatic/{shapes}/disaggregated/inflow_m3.parquet",
     log:
-        "logs/{shapes}/powerplants_get_inflow_m3.log",
+        "<logs>/{shapes}/powerplants_get_inflow_m3.log",
     conda:
-        "../envs/default.yaml"
+        "../envs/hydropower.yaml"
     script:
         "../scripts/powerplants_get_inflow_m3.py"
 
@@ -53,15 +53,15 @@ rule powerplants_get_inflow_mwh:
         capacity_factor_range=internal["capacity_factor_range"],
         technology_mapping=config["powerplants"]["technology_mapping"],
     input:
-        inflow_m3="resources/automatic/{shapes}/disaggregated/inflow_m3.parquet",
-        adjusted_powerplants="resources/automatic/{shapes}/adjusted_powerplants.parquet",
-        statistics="results/{shapes}/statistics/generation.parquet",
+        inflow_m3="<resources>/automatic/{shapes}/disaggregated/inflow_m3.parquet",
+        adjusted_powerplants="<resources>/automatic/{shapes}/adjusted_powerplants.parquet",
+        statistics="<statistics>",
     output:
-        inflow_mwh="results/{shapes}/disaggregated/inflow_mwh.parquet",
+        inflow_mwh="<disaggregated_inflow>",
     log:
-        "logs/{shapes}/powerplants_get_inflow_mwh.log",
+        "<logs>/{shapes}/powerplants_get_inflow_mwh.log",
     conda:
-        "../envs/default.yaml"
+        "../envs/hydropower.yaml"
     script:
         "../scripts/powerplants_get_inflow_mwh.py"
 
@@ -72,20 +72,20 @@ rule powerplants_get_cf_per_shape:
     params:
         technology_mapping=config["powerplants"]["technology_mapping"],
     input:
-        adjusted_powerplants="resources/automatic/{shapes}/adjusted_powerplants.parquet",
-        inflow_mwh="results/{shapes}/disaggregated/inflow_mwh.parquet",
+        adjusted_powerplants="<resources>/automatic/{shapes}/adjusted_powerplants.parquet",
+        inflow_mwh="<disaggregated_inflow>",
     output:
-        timeseries="results/{shapes}/aggregated/{plant_type}_cf.parquet",
+        timeseries="<aggregated_cf_timeseries>",
         figure=report(
-            "results/{shapes}/aggregated/{plant_type}_cf.pdf",
+            "<results>/{shapes}/aggregated/{plant_type}_cf.pdf",
             caption="../report/cf_per_shape.rst",
             category="Hydropower module",
         ),
     wildcard_constraints:
         plant_type="|".join(["run_of_river", "reservoir"]),
     log:
-        "logs/{shapes}/powerplants_get_cf_per_shape_{plant_type}.log",
+        "<logs>/{shapes}/powerplants_get_cf_per_shape_{plant_type}.log",
     conda:
-        "../envs/default.yaml"
+        "../envs/hydropower.yaml"
     script:
         "../scripts/powerplants_get_cf_per_shape.py"

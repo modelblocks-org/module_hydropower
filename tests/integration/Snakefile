@@ -16,7 +16,7 @@ module module_hydropower:
         shapes="resources/inputs/{shapes}/shapes.parquet",
         powerplants="resources/inputs/{shapes}/powerplants.parquet",
         # Redirect specific module results (outputs)
-        aggregated_cf_timeseries="results/outputs/{shapes}/{plant_type}_cf.parquet",
+        aggregated_inflow_pu="results/outputs/{shapes}/{plant_type}_pu.parquet",
         # Redirect module intermediate files
         logs="resources/hydropower/logs",
         resources="resources/hydropower/resources",
@@ -34,11 +34,11 @@ SHAPES = ["MNE"]
 # Request something from the module
 rule all:
     message:
-        "Generate CF timeseries for a small country."
+        "Generate PU timeseries for a small country."
     default_target: True
     input:
         expand(
-            "results/outputs/{shapes}/{plant_type}_cf.parquet",
+            "results/outputs/{shapes}/{plant_type}_pu.parquet",
             shapes=SHAPES,
             plant_type=PLANTS,
         ),

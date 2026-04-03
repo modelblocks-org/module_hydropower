@@ -14,7 +14,7 @@ pathvars:
     shapes:
       default: "<resources>/user/{shapes}/shapes.parquet"
       description: |
-        Region-specific polygons to process during capacity aggregation.
+        Region-specific polygons to process during aggregation.
         See the schemas in `workflow/scripts/_schemas.py` for more information.
     powerplants:
       default: "<resources>/user/{shapes}/powerplants.parquet"
@@ -30,10 +30,10 @@ pathvars:
       description: >
         Inflow time series for each powerplant in MWh.
         Only includes powerplants that fall within the provided shapes and buffer distance.
-    aggregated_cf_timeseries:
-      default: "<results>/{shapes}/aggregated/{plant_type}_cf.parquet"
+    aggregated_inflow_pu:
+      default: "<results>/{shapes}/aggregated/{plant_type}_inflow_pu.parquet"
       description: >
-        Capacity factor (CF) timeseries of a hydropower plant type, aggregated to shapes.
+        Inflow per-unit (PU) of capacity timeseries of a hydropower plant type, per shapes.
 wildcards:
   shapes: name of the provided shapes case.
   plant_type: Either 'run_of_river' or 'reservoir'.

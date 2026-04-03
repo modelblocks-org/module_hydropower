@@ -50,7 +50,7 @@ rule powerplants_get_inflow_mwh:
     message:
         "Calculating powerplant generation in MWh and applying corrections using historical data."
     params:
-        capacity_factor_range=internal["capacity_factor_range"],
+        pu_factor_range=internal["pu_factor_range"],
         technology_mapping=config["powerplants"]["technology_mapping"],
     input:
         inflow_m3=rules.powerplants_get_inflow_m3.output.inflow,
@@ -66,26 +66,26 @@ rule powerplants_get_inflow_mwh:
         "../scripts/powerplants_get_inflow_mwh.py"
 
 
-rule powerplants_get_cf_per_shape:
+rule powerplants_get_pu_per_shape:
     message:
-        "Calculating capacity factor timeseries per shape for '{wildcards.plant_type}'."
+        "Calculating aggregated per-unit timeseries per shape for '{wildcards.plant_type}'."
     params:
         technology_mapping=config["powerplants"]["technology_mapping"],
     input:
         adjusted_powerplants=rules.powerplants_adjust_location.output.adjusted_powerplants,
         inflow_mwh="<disaggregated_inflow>",
     output:
-        timeseries="<aggregated_cf_timeseries>",
+        timeseries="<aggregated_inflow_pu>",
         figure=report(
-            "<results>/{shapes}/aggregated/{plant_type}_cf.pdf",
-            caption="../report/cf_per_shape.rst",
+            "<results>/{shapes}/aggregated/{plant_type}_inflow_pu.pdf",
+            caption="../report/pu_per_shape.rst",
             category="Hydropower module",
         ),
     wildcard_constraints:
         plant_type="|".join(["run_of_river", "reservoir"]),
     log:
-        "<logs>/{shapes}/powerplants_get_cf_per_shape_{plant_type}.log",
+        "<logs>/{shapes}/powerplants_get_pu_per_shape_{plant_type}.log",
     conda:
         "../envs/hydropower.yaml"
     script:
-        "../scripts/powerplants_get_cf_per_shape.py"
+        "../scripts/powerplants_get_pu_per_shape.py"

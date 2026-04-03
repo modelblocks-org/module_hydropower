@@ -43,18 +43,18 @@ def _estimate_bounded_powerplant_inflow(
     inflow_m3: pd.DataFrame,
     national_generation: pd.DataFrame,
     year: int,
-    capacity_factor_range: dict,
+    pu_factor_range: dict,
 ) -> pd.DataFrame:
     """Obtain magnitude-corrected hydropower timeseries dataset for a given year.
 
     The inflow timeseries will be scaled utilising national generation data.
     The aim is to correct its magnitude while retaining its dynamics.
 
-    A capacity factor range is used to determine the upper limit and zero-cutoff.
+    A per-unit factor range is used to determine the upper limit and zero-cutoff.
 
     General assumptions:
         - Annual total never exceeds installed capacity * upper limit.
-        - Values lower than the min. capacity factor range will be set to zero.
+        - Values lower than the min. per-unit factor range will be set to zero.
     """
     inflow_m3_yr = inflow_m3[inflow_m3.index.year == year]
     generation_yr = national_generation[national_generation.year == year]
@@ -95,10 +95,10 @@ def _estimate_bounded_powerplant_inflow(
     for plant_id, plant_data in plants_by_id.iterrows():
         inflow_m3_per_hour = inflow_m3_yr[plant_id]
         annual_generation_mwh = annual_powerplant_mwh[plant_id]
-        cf_range = capacity_factor_range[plant_data["technology"]]
+        pu_range = pu_factor_range[plant_data["technology"]]
 
         # Obtain MWh, ensuring max-cutoff is not exceeded
-        max_cutoff = plant_data["output_capacity_mw"] * cf_range["max"]
+        max_cutoff = plant_data["output_capacity_mw"] * pu_range["max"]
         max_generation_mwh = max_cutoff * hours_in_year
         if annual_generation_mwh > max_generation_mwh:
             raise ValueError(
@@ -109,7 +109,7 @@ def _estimate_bounded_powerplant_inflow(
         )
 
         # Convert values below the minimum range to zero, to avoid very small numbers
-        zero_cutoff = plant_data["output_capacity_mw"] * cf_range["min"]
+        zero_cutoff = plant_data["output_capacity_mw"] * pu_range["min"]
         inflow_mwh_yr[plant_id] = inflow_mwh_yr[plant_id].where(
             inflow_mwh_yr[plant_id] >= zero_cutoff, 0
         )
@@ -121,7 +121,7 @@ def powerplants_get_inflow_mwh(
     inflow_m3_file: str,
     powerplants_file: str,
     statistics_file: str,
-    capacity_factor_range: dict,
+    pu_factor_range: dict,
     technology_mapping: dict,
     inflow_mwh_file: str,
 ):
@@ -131,7 +131,7 @@ def powerplants_get_inflow_mwh(
         inflow_m3_file (str): Dataset with water inflow per-powerplant in m3.
         powerplants_file (str): Powerplants dataset (adjusted).
         statistics_file (str): Annual national hydropower generation per country.
-        capacity_factor_range (dict): Max/min range of inflow in relation to the plant's capacity.
+        pu_factor_range (dict): Max/min range of inflow in relation to the plant's capacity.
         technology_mapping (dict): names of technologies in user files.
         inflow_mwh_file (str): Resulting file with energy inflow per powerplant in MWh.
     """
@@ -143,8 +143,8 @@ def powerplants_get_inflow_mwh(
 
     # Match user technology names with those in our internal settings
     # and process only relevant technologies
-    remapped_cf_range = {
-        v: capacity_factor_range[k] for k, v in technology_mapping.items()
+    remapped_pu_range = {
+        v: pu_factor_range[k] for k, v in technology_mapping.items()
     }
     powerplants = powerplants[
         powerplants["technology"].isin(technology_mapping.values())
@@ -152,7 +152,7 @@ def powerplants_get_inflow_mwh(
     year_results = []
     for year in sorted(inflow_m3.index.year.unique()):
         inflow_mwh_yr = _estimate_bounded_powerplant_inflow(
-            powerplants, inflow_m3, generation, year, remapped_cf_range
+            powerplants, inflow_m3, generation, year, remapped_pu_range
         )
         year_results.append(inflow_mwh_yr)
 
@@ -166,7 +166,7 @@ if __name__ == "__main__":
         inflow_m3_file=snakemake.input.inflow_m3,
         powerplants_file=snakemake.input.adjusted_powerplants,
         statistics_file=snakemake.input.statistics,
-        capacity_factor_range=snakemake.params.capacity_factor_range,
+        pu_factor_range=snakemake.params.pu_factor_range,
         technology_mapping=snakemake.params.technology_mapping,
         inflow_mwh_file=snakemake.output.inflow_mwh,
     )

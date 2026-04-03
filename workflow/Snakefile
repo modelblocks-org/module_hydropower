@@ -15,7 +15,7 @@ pathvars:
     # Module results
     statistics="<results>/{shapes}/statistics/generation.parquet",
     disaggregated_inflow="<results>/{shapes}/disaggregated/inflow_mwh.parquet",
-    aggregated_cf_timeseries="<results>/{shapes}/aggregated/{plant_type}_cf.parquet",
+    aggregated_inflow_pu="<results>/{shapes}/aggregated/{plant_type}_inflow_pu.parquet",
 
 
 # Load the example configuration. This will be overridden by users.

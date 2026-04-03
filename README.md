@@ -94,5 +94,5 @@ Tröndle, T., & Pickering, B. (2021). Euro-Calliope (Version 1.2.0.dev) [Compute
     - MIT licensed. Please consult our source code for details.
 * **National hydropower generation dataset.** U.S. Energy Information Administration (Oct 2008). <https://www.eia.gov/international/overview/world>
 
-Additionaly, this module relies on the following for testing and stable integration:
+Additionally, this module relies on the following for testing and stable integration:
 * **Data stability aid.** Ruiz Manuel, I., & Pfenninger, S. (2026). Modelblocks - module hydropower (v0.1.0) [Data set]. Zenodo. <https://doi.org/10.5281/zenodo.19401947>

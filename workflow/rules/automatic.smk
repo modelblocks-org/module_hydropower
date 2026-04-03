@@ -7,7 +7,7 @@ rule download_eia:
     params:
         url=internal["resources"]["automatic"]["EIA"],
     output:
-        zipfile="<resources>/automatic/downloads/EIA-INTL.zip",
+        zipfile="<resources>/automatic/eia/EIA-INTL.zip",
     log:
         "<logs>/download_eia.log",
     localrule: True
@@ -25,7 +25,7 @@ rule download_basin:
             continent=wc.continent
         ),
     output:
-        path="<resources>/automatic/hydrobasin_{continent}.zip",
+        path="<resources>/automatic/hydrobasins/{continent}.zip",
     wildcard_constraints:
         continent="|".join(internal["continent_codes"]),
     conda:
@@ -47,9 +47,9 @@ rule download_cutout:
     input:
         shapes="<shapes>",
     output:
-        cutout="<resources>/automatic/{shapes}/cutout.nc",
+        cutout="<resources>/automatic/shapes/{shapes}/cutout.nc",
         plot=report(
-            "<resources>/automatic/{shapes}/cutout.png",
+            "<resources>/automatic/shapes/{shapes}/cutout.png",
             caption="../report/cutout.rst",
             category="Hydropower module",
         ),

@@ -8,13 +8,13 @@ rule powerplants_adjust_location:
         crs=config["crs"],
         basin_adjustment=config["powerplants"]["basin_adjustment"],
     input:
-        basins=f"<resources>/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet",
+        basins=f"<resources>/automatic/hydrobasins/global_{config["pfafstetter_level"]}.parquet",
         powerplants="<powerplants>",
         shapes="<shapes>",
     output:
-        adjusted_powerplants="<resources>/automatic/{shapes}/adjusted_powerplants.parquet",
+        adjusted_powerplants="<resources>/automatic/shapes/{shapes}/adjusted_powerplants.parquet",
         plot=report(
-            "<resources>/automatic/{shapes}/adjusted_powerplants.png",
+            "<resources>/automatic/shapes/{shapes}/adjusted_powerplants.png",
             caption="../report/adjustment.rst",
             category="Hydropower module",
         ),
@@ -32,12 +32,12 @@ rule powerplants_get_inflow_m3:
     params:
         smoothing_hours=config["smoothing_hours"],
     input:
-        adjusted_powerplants="<resources>/automatic/{shapes}/adjusted_powerplants.parquet",
-        basins=f"<resources>/automatic/hydrobasin_global_{config["pfafstetter_level"]}.parquet",
+        adjusted_powerplants=rules.powerplants_adjust_location.output.adjusted_powerplants,
+        basins=f"<resources>/automatic/hydrobasins/global_{config["pfafstetter_level"]}.parquet",
         shapes="<shapes>",
-        cutout="<resources>/automatic/{shapes}/cutout.nc",
+        cutout=rules.download_cutout.output.cutout,
     output:
-        inflow="<resources>/automatic/{shapes}/disaggregated/inflow_m3.parquet",
+        inflow="<resources>/automatic/shapes/{shapes}/disaggregated/inflow_m3.parquet",
     log:
         "<logs>/{shapes}/powerplants_get_inflow_m3.log",
     conda:
@@ -53,8 +53,8 @@ rule powerplants_get_inflow_mwh:
         capacity_factor_range=internal["capacity_factor_range"],
         technology_mapping=config["powerplants"]["technology_mapping"],
     input:
-        inflow_m3="<resources>/automatic/{shapes}/disaggregated/inflow_m3.parquet",
-        adjusted_powerplants="<resources>/automatic/{shapes}/adjusted_powerplants.parquet",
+        inflow_m3=rules.powerplants_get_inflow_m3.output.inflow,
+        adjusted_powerplants=rules.powerplants_adjust_location.output.adjusted_powerplants,
         statistics="<statistics>",
     output:
         inflow_mwh="<disaggregated_inflow>",
@@ -72,7 +72,7 @@ rule powerplants_get_cf_per_shape:
     params:
         technology_mapping=config["powerplants"]["technology_mapping"],
     input:
-        adjusted_powerplants="<resources>/automatic/{shapes}/adjusted_powerplants.parquet",
+        adjusted_powerplants=rules.powerplants_adjust_location.output.adjusted_powerplants,
         inflow_mwh="<disaggregated_inflow>",
     output:
         timeseries="<aggregated_cf_timeseries>",

@@ -83,8 +83,10 @@ def _estimate_bounded_powerplant_inflow(
         f"Country data for {year} is not unique!"
     )
     annual_powerplant_mwh = plants_by_id.apply(
-        lambda x: annual_national_generation[x.country_id]
-        * national_cap_share_per_powerplant[x.name],
+        lambda x: (
+            annual_national_generation[x.country_id]
+            * national_cap_share_per_powerplant[x.name]
+        ),
         axis="columns",
     )
     hours_in_year = 366 * 24 if isleap(year) else 365 * 24

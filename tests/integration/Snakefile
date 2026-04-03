@@ -4,18 +4,30 @@ configfile: workflow.source_path("./test_config.yaml")
 
 # Import the module and configure it.
 # `snakefile:` specifies the module. It can use file paths and special github(...) / gitlab(...) markers
+# `config`: specifies the module configuration.
+# `pathvars:` helps you re-wire where the module places files.
 module module_hydropower:
     snakefile:
         "../../workflow/Snakefile"
     config:
         config["module_hydropower"]
-    prefix:
-        "results/integration_test/"
+    pathvars:
+        # Redirect specific user resources (inputs)
+        shapes="resources/inputs/{shapes}/shapes.parquet",
+        powerplants="resources/inputs/{shapes}/powerplants.parquet",
+        # Redirect specific module results (outputs)
+        aggregated_cf_timeseries="results/outputs/{shapes}/{plant_type}_cf.parquet",
+        # Redirect module intermediate files
+        logs="resources/hydropower/logs",
+        resources="resources/hydropower/resources",
+        results="resources/hydropower/results",
 
 
 # rename all module rules with a prefix, to avoid naming conflicts.
 use rule * from module_hydropower as module_hydropower_*
 
+PLANTS=["run_of_river", "reservoir"]
+SHAPES=["MNE"]
 
 # Request something from the module
 rule all:
@@ -23,5 +35,4 @@ rule all:
         "Generate CF timeseries for a small country."
     default_target: True
     input:
-        "results/integration_test/results/MNE/aggregated/reservoir_cf.parquet",
-        "results/integration_test/results/MNE/aggregated/run_of_river_cf.parquet",
+        expand("results/outputs/{shapes}/{plant_type}_cf.parquet", shapes=SHAPES, plant_type=PLANTS),

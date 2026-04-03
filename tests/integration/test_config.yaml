@@ -1,3 +1,5 @@
+# A lightweight configuration.
+# Designed to minimise timeouts during automated testing on Github
 module_hydropower:
   pfafstetter_level: "01"  # Use an extremely coarse basin resolution
   years:

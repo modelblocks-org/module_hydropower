@@ -4,16 +4,14 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+import _schemas
 import geopandas as gpd
 import matplotlib.pyplot as plt
-import pandera.io as io
 from pyproj import CRS
 
 if TYPE_CHECKING:
     snakemake: Any
-sys.stderr = open(snakemake.log[0], "w")
-POWERPLANT_SCHEMA = io.from_yaml(snakemake.input.powerplant_schema)
-SHAPE_SCHEMA = io.from_yaml(snakemake.input.shape_schema)
+sys.stderr = open(snakemake.log[0], "w", buffering=1)
 
 
 def _plot_adjustment(
@@ -21,19 +19,21 @@ def _plot_adjustment(
     powerplants_path: str,
     adjusted_powerplants_path: str,
     plot_path: str,
+    crs: dict,
 ):
-    shapes = gpd.read_parquet(shapes_path)
-    before = gpd.read_parquet(powerplants_path)
-    after = gpd.read_parquet(adjusted_powerplants_path)
+    shapes = gpd.read_parquet(shapes_path).to_crs(crs["projected"])
+    before = gpd.read_parquet(powerplants_path).to_crs(crs["projected"])
+    after = gpd.read_parquet(adjusted_powerplants_path).to_crs(crs["projected"])
     difference = before[~before["powerplant_id"].isin(after["powerplant_id"])]
 
-    ax = shapes.plot(figsize=(10, 10), color="royalblue")
+    fig, ax = plt.subplots(figsize=(10, 10), layout="constrained")
+    ax = shapes.plot(ax=ax, color="royalblue")
     after.plot(ax=ax, color="black", marker=".", markersize=8, label="Within")
     if not difference.empty:
         difference.plot(ax=ax, color="coral", marker=".", markersize=8, label="Dropped")
     ax.legend()
     ax.set_title("Powerplant adjustment")
-    plt.savefig(plot_path, bbox_inches="tight")
+    fig.savefig(plot_path)
 
 
 def powerplants_adjust_location(
@@ -65,10 +65,8 @@ def powerplants_adjust_location(
 
     # Read and validate input files
     basins = gpd.read_parquet(basins_path)
-    powerplants = gpd.read_parquet(powerplants_path)
-    POWERPLANT_SCHEMA.validate(powerplants)
-    shapes = gpd.read_parquet(shapes_path)
-    SHAPE_SCHEMA.validate(shapes)
+    powerplants = _schemas.PowerplantSchema.validate(gpd.read_parquet(powerplants_path))
+    shapes = _schemas.ShapeSchema.validate(gpd.read_parquet(shapes_path))
 
     # Coordinate-based operations must use a geographic CRS
     basins = basins.to_crs(crs["geographic"])
@@ -128,7 +126,7 @@ def powerplants_adjust_location(
 
     # Re-validate and save
     powerplants = powerplants.to_crs(crs["geographic"])
-    POWERPLANT_SCHEMA.validate(powerplants)
+    _schemas.PowerplantSchema.validate(powerplants)
     powerplants.to_parquet(adjusted_powerplants_path)
 
 
@@ -146,4 +144,5 @@ if __name__ == "__main__":
         powerplants_path=snakemake.input.powerplants,
         adjusted_powerplants_path=snakemake.output.adjusted_powerplants,
         plot_path=snakemake.output.plot,
+        crs=snakemake.params.crs,
     )

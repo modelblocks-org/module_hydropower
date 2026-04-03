@@ -6,4 +6,6 @@ on:
 
 jobs:
   ci-tests:
-    uses: calliope-project/data-module-template/.github/workflows/template-pr-ci.yml@latest
+    uses: calliope-project/data-module-template/.github/workflows/template-pr-ci.yml@feature-ci-cdsapi
+    secrets:
+      CDSAPI_KEY: ${{ secrets.CDSAPI_KEY }}

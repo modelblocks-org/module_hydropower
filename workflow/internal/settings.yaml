@@ -2,14 +2,15 @@
 resources:
   automatic:
     # Links for automatically downloaded files
+    EIA: "https://zenodo.org/records/16779120/files/EIA-INTL.txt"
     HydroBASINS: https://data.hydrosheds.org/file/hydrobasins/standard/hybas_{continent}_lev01-12_v1c.zip
 continent_codes: ["af", "ar", "as", "au", "eu", "gr", "na", "sa", "si"]
 pfafstetter_level_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
 era5_crs: "epsg:4326"
 capacity_factor_range:
-  hydro_dam:
+  reservoir:
     max: 10  # Allow dams to take additional inflow, as they are controllable.
     min: 0.001
-  hydro_run_of_river:
+  run_of_river:
     max: 1  # RoR output should not exceed its capacity.
     min: 0.001

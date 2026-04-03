@@ -7,7 +7,7 @@ import geopandas as gpd
 
 if TYPE_CHECKING:
     snakemake: Any
-sys.stderr = open(snakemake.log[0], "w")
+sys.stderr = open(snakemake.log[0], "w", buffering=1)
 SHP_ZIP_PATH = "hybas_{continent}_lev{level}_v1c.shp"
 
 

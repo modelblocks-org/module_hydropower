@@ -1,6 +1,21 @@
 """Rules to used to download automatic resource files."""
 
 
+rule download_eia:
+    message:
+        "Download the EIA International energy statistics in bulk."
+    params:
+        url=internal["resources"]["automatic"]["EIA"],
+    output:
+        path="resources/automatic/downloads/EIA-INTL.txt",
+    log:
+        "logs/download_eia.log",
+    conda:
+        "../envs/shell.yaml"
+    shell:
+        r'curl -fsSLo {output.path:q} "{params.url}"'
+
+
 rule download_basin:
     message:
         "Downloading HydroBASINS file for '{wildcards.continent}'."
@@ -9,7 +24,7 @@ rule download_basin:
             continent=wc.continent
         ),
     output:
-        temp("resources/automatic/hydrobasin_{continent}.zip"),
+        path=temp("resources/automatic/hydrobasin_{continent}.zip"),
     wildcard_constraints:
         continent="|".join(internal["continent_codes"]),
     conda:
@@ -17,7 +32,7 @@ rule download_basin:
     log:
         "logs/download_basin_{continent}.log",
     shell:
-        "curl -sSLo {output} '{params.url}' "
+        r'curl -fsSLo {output.path:q} "{params.url}"'
 
 
 rule download_cutout:
@@ -28,17 +43,17 @@ rule download_cutout:
         start_year=config["years"]["start"],
         end_year=config["years"]["end"],
     input:
-        shapes="resources/user/shapes.parquet",
+        shapes="resources/user/{shapes}/shapes.parquet",
     output:
-        cutout="resources/automatic/cutout.nc",
+        cutout="resources/automatic/{shapes}/cutout.nc",
         plot=report(
-            "resources/automatic/cutout.png",
+            "resources/automatic/{shapes}/cutout.png",
             caption="../report/cutout.rst",
             category="Hydropower module",
         ),
     conda:
         "../envs/default.yaml"
     log:
-        "logs/download_cutout.log",
+        "logs/{shapes}/download_cutout.log",
     script:
         "../scripts/download_cutout.py"

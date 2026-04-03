@@ -1,7 +1,7 @@
 [project]
 name = "module_hydropower"
 authors = ["See AUTHORS file"]
-description = "A module to calculate hydropower generation timeseries for facilities around the globe."
+description = "A module to calculate hydropower inflow timeseries for facilities around the globe. Based on Euro-Calliope methods."
 license = "Apache-2.0"
 readme = "README.md"
 channels = ["conda-forge", "bioconda"]
@@ -9,33 +9,17 @@ platforms = ["win-64", "linux-64", "osx-arm64"]
 homepage = "https://clio.readthedocs.io/"
 
 [dependencies]
-python = ">=3.12"
-mkdocs-material = ">=9.6.7"
+clio-tools = ">=2025.03.03"
+conda = ">=25.0.0"
+ipdb = ">=0.13.13"
+ipykernel = ">=6.29.5"
+jsonschema = ">=4.0.0"
 mypy = ">=1.15.0"
 pytest = ">=8.3.5"
+python = ">=3.12"
 ruff = ">=0.9.9"
 snakefmt = ">=0.10.2"
-conda = ">=25.0.0"
 snakemake-minimal = ">=8.29.0"
-clio-tools = ">=2025.03.03"
-geopandas = ">=1.0.1,<2"
-ipykernel = ">=6.29.5,<7"
-pyarrow = ">=19.0.1,<20"
-pycountry = ">=24.6.1,<25"
-numpy = ">=2.2.4,<3"
-pandera-geopandas = ">=0.24.0,<0.25"
-contextily = ">=1.6.2,<2"
-ipdb = ">=0.13.13"
-atlite = ">=0.4.0,<0.5"
-geofileops = ">=0.9.2,<0.10"
-xarray = ">=2025.3.0,<2026"
-scipy = ">=1.15.2,<2"
-pandera-io = ">=0.24.0,<0.25"
-
-[pypi-dependencies]
-mkdocs-mermaid2-plugin = ">=1.2.1"
 
 [tasks]
-test = {cmd = "pytest tests/"}
-serve-docs = {cmd = "mkdocs serve"}
-build-docs = {cmd = "mkdocs build"}
+test-integration = {cmd = "pytest tests/clio_test.py"}

@@ -4,7 +4,7 @@ A module to calculate hydropower inflow timeseries for facilities around the glo
 
 <!-- Place an attractive image of module outputs here -->
 <p align="center">
-  <img src="./figures/hydro_dam_cf.png" width="80%">
+  <img src="./figures/reservoir_inflow_pu.png" width="80%">
 </p>
 
 ## About
@@ -27,6 +27,11 @@ Data processing steps:
 
 1. A global dataset of hydro basins is created for a requested Pfafstetter level using data from the [HydroBASINS](https://www.hydrosheds.org/products/hydrobasins) dataset.
 2. Individual powerplant locations (provided by the user) are adjusted using a buffer distance to ensure their location is within the nearest basin.
+
+<p align="center">
+  <img src="./figures/adjusted_powerplants.png" width="60%">
+</p>
+
 3. User provided shapes, powerplants and configuration are used to construct a data request to the [Copernicus Data Store](https://cds.climate.copernicus.eu/) using the [`atlite` library](https://github.com/PyPSA/atlite).
 4. `atlite` is used to construct inflow timeseries per powerplant.
 5. Inflow timeseries are combined and aggregated to the requested resolution, using national-level statistics from the [EIA](https://www.eia.gov/international/) as a guiding normalisation heuristic for total generation.
@@ -34,6 +39,10 @@ Data processing steps:
 The relation is $InflowMWh_{t,r} = PU_{t,r} \cdot Cap_{r}$, where $Cap_r$ is the capacity per region.
     - For run of river powerplants, the timeseries are capped so they may not exceed available capacity.
     - For reservoirs, the timeseries are capped so inflow cannot exceed 10 times the available capacity.
+
+<p align="center">
+  <img src="./figures/reservoir_inflow_pu.png" width="60%">
+</p>
 
 > [!CAUTION]
 > Please be aware of the following limitations.

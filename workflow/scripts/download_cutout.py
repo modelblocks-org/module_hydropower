@@ -7,19 +7,25 @@ import atlite
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from pyproj import CRS
+from shapely.geometry import box
 
 if TYPE_CHECKING:
     snakemake: Any
-sys.stderr = open(snakemake.log[0], "w", buffering=1)
 
 
 def _plot_cutout(shapes_file: str, cutout_file: str, era5_crs: str, path: str):
     cutout = atlite.Cutout(cutout_file)
-    shapes = gpd.read_parquet(shapes_file)
-    ax = shapes.to_crs(era5_crs).plot(figsize=(10, 10))
-    cutout.grid.plot(ax=ax, edgecolor="grey", color="None")
-    ax.set_title("ERA5 cutout")
-    plt.savefig(path, bbox_inches="tight")
+    shapes = gpd.read_parquet(shapes_file).to_crs(era5_crs)
+
+    fig, ax = plt.subplots(layout="constrained")
+    shapes.boundary.plot(ax=ax, color="black")
+    gpd.GeoSeries([box(*cutout.bounds)], crs=era5_crs).boundary.plot(
+        ax=ax, color="red", linewidth=1
+    )
+
+    ax.set(title="ERA5 cutout", xticks=[], yticks=[], xlabel="", ylabel="")
+    fig.savefig(path, dpi=200, bbox_inches="tight", pad_inches="layout")
+    plt.close(fig)
 
 
 def runoff_cutout(input_shapes, era5_crs, start_year, end_year, output_netcdf):
@@ -43,6 +49,7 @@ def runoff_cutout(input_shapes, era5_crs, start_year, end_year, output_netcdf):
 
 
 if __name__ == "__main__":
+    sys.stderr = open(snakemake.log[0], "w", buffering=1)
     runoff_cutout(
         input_shapes=snakemake.input.shapes,
         era5_crs=snakemake.params.era5_crs,

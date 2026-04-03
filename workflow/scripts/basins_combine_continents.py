@@ -9,16 +9,15 @@ import pandas as pd
 
 if TYPE_CHECKING:
     snakemake: Any
-sys.stderr = open(snakemake.log[0], "w", buffering=1)
 
 
 def _plot_combined_basins(global_file, level, path):
     combined = gpd.read_parquet(global_file)
-    ax = combined.plot(figsize=(20, 12))
+    ax = combined.plot(figsize=(10, 6))
     ax.set_title(f"Global hydro basins at Pfafstetter level {level}")
     ax.set_xlabel("longitude")
     ax.set_ylabel("latitude")
-    plt.savefig(path, bbox_inches="tight")
+    plt.savefig(path, dpi=200, bbox_inches="tight")
 
 
 def basins_combine_continents(continent_files, global_file):
@@ -35,6 +34,7 @@ def basins_combine_continents(continent_files, global_file):
 
 
 if __name__ == "__main__":
+    sys.stderr = open(snakemake.log[0], "w", buffering=1)
     basins_combine_continents(
         continent_files=snakemake.input.continent_files,
         global_file=snakemake.output.global_file,

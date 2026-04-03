@@ -11,7 +11,6 @@ from pyproj import CRS
 
 if TYPE_CHECKING:
     snakemake: Any
-sys.stderr = open(snakemake.log[0], "w", buffering=1)
 
 
 def _plot_adjustment(
@@ -26,14 +25,15 @@ def _plot_adjustment(
     after = gpd.read_parquet(adjusted_powerplants_path).to_crs(crs["projected"])
     difference = before[~before["powerplant_id"].isin(after["powerplant_id"])]
 
-    fig, ax = plt.subplots(figsize=(10, 10), layout="constrained")
-    ax = shapes.plot(ax=ax, color="royalblue")
+    fig, ax = plt.subplots(layout="constrained")
+    ax = shapes.plot(column="shape_class", ax=ax)
     after.plot(ax=ax, color="black", marker=".", markersize=8, label="Within")
     if not difference.empty:
         difference.plot(ax=ax, color="coral", marker=".", markersize=8, label="Dropped")
+    ax.set(xticks=[], yticks=[], xlabel="", ylabel="")
     ax.legend()
     ax.set_title("Powerplant adjustment")
-    fig.savefig(plot_path)
+    fig.savefig(plot_path, dpi=200, bbox_inches="tight")
 
 
 def powerplants_adjust_location(
@@ -131,6 +131,7 @@ def powerplants_adjust_location(
 
 
 if __name__ == "__main__":
+    sys.stderr = open(snakemake.log[0], "w", buffering=1)
     powerplants_adjust_location(
         basins_path=snakemake.input.basins,
         powerplants_path=snakemake.input.powerplants,

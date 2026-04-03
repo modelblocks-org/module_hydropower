@@ -26,8 +26,12 @@ Data processing steps:
 </p>
 
 1. A global dataset of hydro basins is created for a requested Pfafstetter level using data from the [HydroBASINS](https://www.hydrosheds.org/products/hydrobasins) dataset.
-2. User provided shapes and configured years are used to construct a data request to the [Copernicus Data Store](https://cds.climate.copernicus.eu/) using the [`atlite` library](https://github.com/PyPSA/atlite).
-2. National powerplant data (provided by the user) is adjusted using a buffer distance to ensure their location is within the nearest basin.
+2. Individual powerplant locations (provided by the user) are adjusted using a buffer distance to ensure their location is within the nearest basin.
+3. User provided shapes, powerplants and configuration are used to construct a data request to the [Copernicus Data Store](https://cds.climate.copernicus.eu/) using the [`atlite` library](https://github.com/PyPSA/atlite).
+4. `atlite` is used to construct inflow timeseries per powerplant.
+5. Inflow timeseries are combined and aggregated to the requested resolution, using national-level statistics from the [EIA](https://www.eia.gov/international/) as a guiding normalisation heuristic for total generation.
+    - For run of river powerplants, the timeseries are capped so they may not exceed available capacity.
+    - For reservoirs, the timeseries are capped so inflow cannot exceed 10 times the available capacity.
 
 > [!CAUTION]
 > Please be aware of the following limitations.

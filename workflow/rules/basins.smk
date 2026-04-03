@@ -10,7 +10,9 @@ rule basins_extract_pfafstetter_level:
     input:
         zip_file=rules.download_basin.output.path,
     output:
-        parquet_file=temp("<resources>/automatic/hydrobasins/{continent}_{level}.parquet"),
+        parquet_file=temp(
+            "<resources>/automatic/hydrobasins/{continent}_{level}.parquet"
+        ),
     wildcard_constraints:
         continent="|".join(internal["continent_codes"]),
         level="|".join(internal["pfafstetter_level_codes"]),

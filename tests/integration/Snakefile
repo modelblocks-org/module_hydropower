@@ -26,8 +26,10 @@ module module_hydropower:
 # rename all module rules with a prefix, to avoid naming conflicts.
 use rule * from module_hydropower as module_hydropower_*
 
-PLANTS=["run_of_river", "reservoir"]
-SHAPES=["MNE"]
+
+PLANTS = ["run_of_river", "reservoir"]
+SHAPES = ["MNE"]
+
 
 # Request something from the module
 rule all:
@@ -35,4 +37,8 @@ rule all:
         "Generate CF timeseries for a small country."
     default_target: True
     input:
-        expand("results/outputs/{shapes}/{plant_type}_cf.parquet", shapes=SHAPES, plant_type=PLANTS),
+        expand(
+            "results/outputs/{shapes}/{plant_type}_cf.parquet",
+            shapes=SHAPES,
+            plant_type=PLANTS,
+        ),

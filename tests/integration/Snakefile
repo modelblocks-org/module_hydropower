@@ -7,10 +7,6 @@ configfile: workflow.source_path("./test_config.yaml")
 # `config`: specifies the module configuration.
 # `pathvars:` helps you re-wire where the module places files.
 module module_hydropower:
-    snakefile:
-        "../../workflow/Snakefile"
-    config:
-        config["module_hydropower"]
     pathvars:
         # Redirect specific user resources (inputs)
         shapes="resources/inputs/{shapes}/shapes.parquet",
@@ -21,6 +17,10 @@ module module_hydropower:
         logs="resources/hydropower/logs",
         resources="resources/hydropower/resources",
         results="resources/hydropower/results",
+    snakefile:
+        "../../workflow/Snakefile"
+    config:
+        config["module_hydropower"]
 
 
 # rename all module rules with a prefix, to avoid naming conflicts.
@@ -33,8 +33,6 @@ SHAPES = ["MNE"]
 
 # Request something from the module
 rule all:
-    message:
-        "Generate PU timeseries for a small country."
     default_target: True
     input:
         expand(
@@ -42,3 +40,5 @@ rule all:
             shapes=SHAPES,
             plant_type=PLANTS,
         ),
+    message:
+        "Generate PU timeseries for a small country."

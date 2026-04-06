@@ -2,10 +2,6 @@
 
 
 rule prepare_statistics:
-    message:
-        "Get EIA annual country hydropower generation statistics."
-    params:
-        years=config["years"],
     input:
         shapes="<shapes>",
         eia_bulk=rules.download_eia.output.zipfile,
@@ -16,5 +12,9 @@ rule prepare_statistics:
         "<logs>/{shapes}/prepare_statistics.log",
     conda:
         "../envs/hydropower.yaml"
+    params:
+        years=config["years"],
+    message:
+        "Get EIA annual country hydropower generation statistics."
     script:
         "../scripts/prepare_statistics.py"

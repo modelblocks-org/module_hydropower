@@ -2,11 +2,6 @@
 
 
 rule powerplants_adjust_location:
-    message:
-        "Adjusting hydro powerplant location to the nearest shape and basin."
-    params:
-        crs=config["crs"],
-        basin_adjustment=config["powerplants"]["basin_adjustment"],
     input:
         basins=f"<resources>/automatic/hydrobasins/global_{config["pfafstetter_level"]}.parquet",
         powerplants="<powerplants>",
@@ -22,15 +17,16 @@ rule powerplants_adjust_location:
         "<logs>/{shapes}/powerplants_adjust_location.log",
     conda:
         "../envs/hydropower.yaml"
+    params:
+        crs=config["crs"],
+        basin_adjustment=config["powerplants"]["basin_adjustment"],
+    message:
+        "Adjusting hydro powerplant location to the nearest shape and basin."
     script:
         "../scripts/powerplants_adjust_location.py"
 
 
 rule powerplants_get_inflow_m3:
-    message:
-        "Calculating hydro powerplant inflow in m3."
-    params:
-        smoothing_hours=config["smoothing_hours"],
     input:
         adjusted_powerplants=rules.powerplants_adjust_location.output.adjusted_powerplants,
         basins=f"<resources>/automatic/hydrobasins/global_{config["pfafstetter_level"]}.parquet",
@@ -42,16 +38,15 @@ rule powerplants_get_inflow_m3:
         "<logs>/{shapes}/powerplants_get_inflow_m3.log",
     conda:
         "../envs/hydropower.yaml"
+    params:
+        smoothing_hours=config["smoothing_hours"],
+    message:
+        "Calculating hydro powerplant inflow in m3."
     script:
         "../scripts/powerplants_get_inflow_m3.py"
 
 
 rule powerplants_get_inflow_mwh:
-    message:
-        "Calculating powerplant generation in MWh and applying corrections using historical data."
-    params:
-        pu_factor_range=internal["pu_factor_range"],
-        technology_mapping=config["powerplants"]["technology_mapping"],
     input:
         inflow_m3=rules.powerplants_get_inflow_m3.output.inflow,
         adjusted_powerplants=rules.powerplants_adjust_location.output.adjusted_powerplants,
@@ -62,15 +57,16 @@ rule powerplants_get_inflow_mwh:
         "<logs>/{shapes}/powerplants_get_inflow_mwh.log",
     conda:
         "../envs/hydropower.yaml"
+    params:
+        pu_factor_range=internal["pu_factor_range"],
+        technology_mapping=config["powerplants"]["technology_mapping"],
+    message:
+        "Calculating powerplant generation in MWh and applying corrections using historical data."
     script:
         "../scripts/powerplants_get_inflow_mwh.py"
 
 
 rule powerplants_get_pu_per_shape:
-    message:
-        "Calculating aggregated per-unit timeseries per shape for '{wildcards.plant_type}'."
-    params:
-        technology_mapping=config["powerplants"]["technology_mapping"],
     input:
         adjusted_powerplants=rules.powerplants_adjust_location.output.adjusted_powerplants,
         inflow_mwh="<disaggregated_inflow>",
@@ -81,11 +77,15 @@ rule powerplants_get_pu_per_shape:
             caption="../report/pu_per_shape.rst",
             category="Hydropower module",
         ),
-    wildcard_constraints:
-        plant_type="|".join(["run_of_river", "reservoir"]),
     log:
         "<logs>/{shapes}/powerplants_get_pu_per_shape_{plant_type}.log",
+    wildcard_constraints:
+        plant_type="|".join(["run_of_river", "reservoir"]),
     conda:
         "../envs/hydropower.yaml"
+    params:
+        technology_mapping=config["powerplants"]["technology_mapping"],
+    message:
+        "Calculating aggregated per-unit timeseries per shape for '{wildcards.plant_type}'."
     script:
         "../scripts/powerplants_get_pu_per_shape.py"

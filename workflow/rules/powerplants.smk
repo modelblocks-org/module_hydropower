@@ -16,7 +16,7 @@ rule powerplants_adjust_location:
     log:
         "<logs>/{shapes}/powerplants_adjust_location.log",
     conda:
-        "../envs/hydropower.yaml"
+        "../envs/module.yaml"
     params:
         crs=config["crs"],
         basin_adjustment=config["powerplants"]["basin_adjustment"],
@@ -37,7 +37,7 @@ rule powerplants_get_inflow_m3:
     log:
         "<logs>/{shapes}/powerplants_get_inflow_m3.log",
     conda:
-        "../envs/hydropower.yaml"
+        "../envs/module.yaml"
     params:
         smoothing_hours=config["smoothing_hours"],
     message:
@@ -56,7 +56,7 @@ rule powerplants_get_inflow_mwh:
     log:
         "<logs>/{shapes}/powerplants_get_inflow_mwh.log",
     conda:
-        "../envs/hydropower.yaml"
+        "../envs/module.yaml"
     params:
         pu_factor_range=internal["pu_factor_range"],
         technology_mapping=config["powerplants"]["technology_mapping"],
@@ -82,7 +82,7 @@ rule powerplants_get_pu_per_shape:
     wildcard_constraints:
         plant_type="|".join(["run_of_river", "reservoir"]),
     conda:
-        "../envs/hydropower.yaml"
+        "../envs/module.yaml"
     params:
         technology_mapping=config["powerplants"]["technology_mapping"],
     message:

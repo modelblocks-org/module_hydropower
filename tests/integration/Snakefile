@@ -14,9 +14,9 @@ module module_hydropower:
         # Redirect specific module results (outputs)
         aggregated_inflow_pu="results/outputs/{shapes}/{plant_type}_pu.parquet",
         # Redirect module intermediate files
-        logs="resources/hydropower/logs",
-        resources="resources/hydropower/resources",
-        results="resources/hydropower/results",
+        logs="resources/module/logs",
+        resources="resources/module/resources",
+        results="resources/module/results",
     snakefile:
         "../../workflow/Snakefile"
     config:

@@ -16,6 +16,7 @@ from clio_tools.data_module import ModuleInterface
 CDSAPI_KEY = os.getenv("CDSAPI_KEY")
 CDS_FILE = Path.home().joinpath(".cdsapirc")
 
+
 @pytest.fixture(scope="module")
 def integration_path(user_path: Path, module_path: Path):
     """Ensures the minimal integration test is ready."""
@@ -30,6 +31,7 @@ def integration_path(user_path: Path, module_path: Path):
         destination_file.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(user_path / file, destination_file)
     return integration_dir
+
 
 @pytest.fixture(scope="module")
 def pixi_platforms(module_path) -> list[str]:

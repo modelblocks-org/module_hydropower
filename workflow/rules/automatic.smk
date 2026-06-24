@@ -8,7 +8,7 @@ rule download_eia:
         "<logs>/download_eia.log",
     localrule: True
     conda:
-        "../envs/shell.yaml"
+        "../envs/module.yaml"
     params:
         url=internal["resources"]["automatic"]["EIA"],
     message:
@@ -26,7 +26,7 @@ rule download_basin:
         continent="|".join(internal["continent_codes"]),
     localrule: True
     conda:
-        "../envs/shell.yaml"
+        "../envs/module.yaml"
     params:
         url=lambda wc: internal["resources"]["automatic"]["HydroBASINS"].format(
             continent=wc.continent
@@ -51,7 +51,7 @@ rule download_cutout:
         "<logs>/{shapes}/download_cutout.log",
     localrule: True
     conda:
-        "../envs/hydropower.yaml"
+        "../envs/module.yaml"
     params:
         era5_crs=internal["era5_crs"],
         start_year=config["years"]["start"],

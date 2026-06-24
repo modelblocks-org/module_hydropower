@@ -14,7 +14,7 @@ rule basins_extract_pfafstetter_level:
         continent="|".join(internal["continent_codes"]),
         level="|".join(internal["pfafstetter_level_codes"]),
     conda:
-        "../envs/hydropower.yaml"
+        "../envs/module.yaml"
     params:
         level=lambda wc: wc.level,
         continent=lambda wc: wc.continent,
@@ -40,7 +40,7 @@ rule basins_combine_continents:
     log:
         "<logs>/basins_combine_continents_{level}.log",
     conda:
-        "../envs/hydropower.yaml"
+        "../envs/module.yaml"
     message:
         "Combine all HydroBASINS into a single dataset for Pfafstetter level '{wildcards.level}'."
     script:

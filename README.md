@@ -1,4 +1,4 @@
-# Modelblocks - Hydropower module
+# Hydropower module
 
 A module to calculate hydropower inflow timeseries for facilities around the globe, based on Euro-Calliope methods.
 
@@ -78,6 +78,21 @@ cd module_hydropower
 pixi install --all
 ```
 
+Please be aware that this is a multi-environment project (see [pixi.toml](./pixi.toml) for details).
+- `default`: used for development and integration testing.
+Because it contains `Snakemake`, `conda` and `pytest` as dependencies it **should not be used** in `Snakemake` rules.
+- `module`: contains minimal dependencies used in `Snakemake` rules.
+If modified, be sure to export it to `Snakemake` so it can be recreated by module users:
+
+```shell
+# create module.yaml and conda-spec pin files in workflow/envs/
+pixi run export-snakemake-env module
+```
+
+
+## Testing
+<!-- Please do not modify this templated section -->
+
 For testing, simply run:
 
 ```shell
@@ -111,3 +126,16 @@ Tröndle, T., & Pickering, B. (2021). Euro-Calliope (Version 1.2.0.dev) [Compute
 
 Additionally, this module relies on the following for testing and stable integration:
 * **Data stability aid.** Ruiz Manuel, I., & Pfenninger, S. (2026). Modelblocks - module hydropower (v0.1.0) [Data set]. Zenodo. <https://doi.org/10.5281/zenodo.19401947>
+
+## Contributors ✨
+
+Thanks goes to these wonderful people, sorted alphabetically ([emoji key](https://allcontributors.org/en/reference/emoji-key/)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

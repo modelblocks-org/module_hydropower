@@ -11,7 +11,7 @@ rule prepare_statistics:
     log:
         "<logs>/{shapes}/prepare_statistics.log",
     conda:
-        "../envs/hydropower.yaml"
+        "../envs/module.yaml"
     params:
         years=config["years"],
     message:

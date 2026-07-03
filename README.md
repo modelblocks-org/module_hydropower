@@ -1,4 +1,4 @@
-# Hydropower module
+# Hydropower timeseries
 
 A module to calculate hydropower inflow timeseries for facilities around the globe, based on Euro-Calliope methods.
 

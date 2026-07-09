@@ -3,6 +3,9 @@
 _commit: v1.0.3
 _src_path: https://github.com/modelblocks-org/data-module-template.git
 authors:
+-   email: 17178478+brynpickering@users.noreply.github.com
+    family_name: Pickering
+    given_name: Bryn
 -   email: i.ruizmanuel@tudelft.nl
     family_name: Ruiz Manuel
     given_name: Ivan

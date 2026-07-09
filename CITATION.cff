@@ -7,6 +7,9 @@ title: "Modelblocks - module_hydropower: Hydropower timeseries"
 repository: "https://github.com/modelblocks-org/module_hydropower"
 license: Apache-2.0
 authors:
+  - given-names: "Bryn"
+    family-names: "Pickering"
+    email: "17178478+brynpickering@users.noreply.github.com"
   - given-names: "Ivan"
     family-names: "Ruiz Manuel"
     email: "i.ruizmanuel@tudelft.nl"

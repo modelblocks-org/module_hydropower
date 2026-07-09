@@ -138,6 +138,7 @@ Thanks goes to these wonderful people, sorted alphabetically ([emoji key](https:
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/brynpickering"><img src="https://avatars.githubusercontent.com/u/17178478?v=4?s=100" width="100px;" alt="Bryn Pickering"/><br /><sub><b>Bryn Pickering</b></sub></a><br /><a href="https://github.com/modelblocks-org/module_hydropower/commits?author=brynpickering" title="Code">💻</a> <a href="#ideas-brynpickering" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://cp.ethz.ch/people/person-detail.tim-troendle.html"><img src="https://avatars.githubusercontent.com/u/3090386?v=4?s=100" width="100px;" alt="Tim Tröndle"/><br /><sub><b>Tim Tröndle</b></sub></a><br /><a href="https://github.com/modelblocks-org/module_hydropower/commits?author=timtroendle" title="Code">💻</a> <a href="#ideas-timtroendle" title="Ideas, Planning, & Feedback">🤔</a></td>
     </tr>
   </tbody>
 </table>

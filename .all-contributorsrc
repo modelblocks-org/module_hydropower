@@ -19,6 +19,16 @@
         "code",
         "ideas"
       ]
+    },
+    {
+      "login": "timtroendle",
+      "name": "Tim Tröndle",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3090386?v=4",
+      "profile": "https://cp.ethz.ch/people/person-detail.tim-troendle.html",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,

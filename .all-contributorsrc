@@ -9,8 +9,20 @@
   "imageSize": 100,
   "commit": false,
   "commitConvention": "none",
-  "contributors": [],
+  "contributors": [
+    {
+      "login": "brynpickering",
+      "name": "Bryn Pickering",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17178478?v=4",
+      "profile": "https://github.com/brynpickering",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    }
+  ],
   "contributorsPerLine": 7,
   "linkToUsage": false,
-  "contributorsSortAlphabetically": true
+  "contributorsSortAlphabetically": true,
+  "commitType": "docs"
 }

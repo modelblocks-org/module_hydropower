@@ -2,11 +2,13 @@
 
 from snakemake.io import apply_wildcards
 
+
 def prefer_existing(file_path):
     """Prevents re-downloads even in forced cases.
 
     Useful for protecting invariable files.
     """
+
     def resolve_output(wildcards):
         path = apply_wildcards(str(file_path), wildcards)
         return before_update(path) if exists(path) else path

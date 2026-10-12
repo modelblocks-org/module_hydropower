@@ -4,33 +4,12 @@ PLEASE ENSURE THIS SET OF MINIMAL TESTS WORKS BEFORE PUBLISHING YOUR MODULE.
 Contents may be updated in future template updates.
 """
 
-import os
-import shutil
 import subprocess
 import tomllib
 from pathlib import Path
 
 import pytest
 from clio_tools.data_module import ModuleInterface
-
-CDSAPI_KEY = os.getenv("CDSAPI_KEY")
-CDS_FILE = Path.home().joinpath(".cdsapirc")
-
-
-@pytest.fixture(scope="module")
-def integration_path(user_path: Path, module_path: Path):
-    """Ensures the minimal integration test is ready."""
-    integration_dir = Path(module_path / "tests/integration")
-    if integration_dir.exists():  # clean everything
-        shutil.rmtree(integration_dir / "resources/", ignore_errors=True)
-        shutil.rmtree(integration_dir / "results/", ignore_errors=True)
-    user_integ_dir = integration_dir / "resources/inputs/"
-    files_to_copy = ["MNE/powerplants.parquet", "MNE/shapes.parquet"]
-    for file in files_to_copy:
-        destination_file = Path(user_integ_dir / file)
-        destination_file.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(user_path / file, destination_file)
-    return integration_dir
 
 
 @pytest.fixture(scope="module")
@@ -95,17 +74,11 @@ def test_snakemake_all_failure(module_path):
     assert "INVALID" in str(process.stderr)
 
 
-@pytest.mark.skipif(
-    not (CDSAPI_KEY or CDS_FILE.exists()),
-    reason="Neither CDSAPI_KEY env var nor ~/.cdsapirc file available.",
-)
-def test_snakemake_integration_testing(integration_path):
+def test_snakemake_integration_testing(module_path):
     """Run a light-weight test simulating someone using this module."""
-    if CDSAPI_KEY and not CDS_FILE.exists():
-        CDS_FILE.write_text(
-            f"url: https://cds.climate.copernicus.eu/api\nkey: {CDSAPI_KEY}\n"
-        )
-
     assert subprocess.run(
-        "snakemake --use-conda --cores 1", shell=True, check=True, cwd=integration_path
+        "snakemake --use-conda --cores 1",
+        shell=True,
+        check=True,
+        cwd=module_path / "tests/integration",
     )

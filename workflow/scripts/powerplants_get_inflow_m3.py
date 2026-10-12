@@ -10,7 +10,6 @@ import geopandas as gpd
 
 if TYPE_CHECKING:
     snakemake: Any
-sys.stderr = open(snakemake.log[0], "w", buffering=1)
 
 
 def powerplants_get_inflow_m3(
@@ -66,6 +65,7 @@ def powerplants_get_inflow_m3(
 
 
 if __name__ == "__main__":
+    sys.stderr = open(snakemake.log[0], "w", buffering=1)
     powerplants_get_inflow_m3(
         shapes_file=snakemake.input.shapes,
         powerplants_file=snakemake.input.adjusted_powerplants,

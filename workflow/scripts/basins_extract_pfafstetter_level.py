@@ -7,7 +7,6 @@ import geopandas as gpd
 
 if TYPE_CHECKING:
     snakemake: Any
-sys.stderr = open(snakemake.log[0], "w", buffering=1)
 SHP_ZIP_PATH = "hybas_{continent}_lev{level}_v1c.shp"
 
 
@@ -36,6 +35,7 @@ def basins_extract_pfafstetter_level(zip_file, continent, level, parquet_file):
 
 
 if __name__ == "__main__":
+    sys.stderr = open(snakemake.log[0], "w", buffering=1)
     basins_extract_pfafstetter_level(
         zip_file=snakemake.input.zip_file,
         continent=snakemake.params.continent,

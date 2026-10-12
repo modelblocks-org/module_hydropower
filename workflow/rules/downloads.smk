@@ -14,7 +14,7 @@ rule download_eia:
     message:
         "Download the EIA International energy statistics in bulk."
     shell:
-        r'curl -fsSLo {output.zipfile:q} "{params.url}"'
+        'curl -fsSLo {output.zipfile:q} "{params.url}" 2>{log:q}'
 
 
 rule download_basin:
@@ -34,7 +34,7 @@ rule download_basin:
     message:
         "Downloading HydroBASINS file for '{wildcards.continent}'."
     shell:
-        r'curl -fsSLo {output.path:q} "{params.url}"'
+        'curl -fsSLo {output.path:q} "{params.url}" 2>{log:q}'
 
 
 rule download_cutout:

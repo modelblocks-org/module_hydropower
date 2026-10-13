@@ -12,7 +12,6 @@ from scipy.optimize import minimize
 
 if TYPE_CHECKING:
     snakemake: Any
-sys.stderr = open(snakemake.log[0], "w", buffering=1)
 
 
 # ---
@@ -162,6 +161,7 @@ def powerplants_get_inflow_mwh(
 
 
 if __name__ == "__main__":
+    sys.stderr = open(snakemake.log[0], "w", buffering=1)
     powerplants_get_inflow_mwh(
         inflow_m3_file=snakemake.input.inflow_m3,
         powerplants_file=snakemake.input.adjusted_powerplants,

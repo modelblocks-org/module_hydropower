@@ -3,7 +3,7 @@
 
 rule basins_extract_pfafstetter_level:
     input:
-        zip_file=rules.download_basin.output.path,
+        zip_file=prefer_existing(rules.download_basin.output.path),
     output:
         parquet_file=temp(
             "<resources>/automatic/hydrobasins/{continent}_{level}.parquet"

@@ -12,7 +12,7 @@ class ShapeSchema(DataFrameModel):
 
     shape_id: Series[str] = Field(unique=True)
     "Unique ID for this shape."
-    country_id: Series[str]
+    country_id: Series[str] = Field(str_length={"min_value": 3, "max_value": 3})
     "ISO alpha-3 code."
     shape_class: Series[str] = Field(isin=["land", "maritime"])
     "Shape classifier"
@@ -30,13 +30,14 @@ class EIAGenerationSchema(DataFrameModel):
     class Config:
         coerce = True
         strict = True
+        unique = ["country_id", "year", "category"]
 
     country_id: Series[str]
-    "Country ISO-3 code"
+    "EIA country or territory code, including historical and non-ISO codes"
     year: Series[int]
     "Sample year"
     category: Series[str] = Field(isin=["hydropower"])
-    generation_mwh: Series[float] = Field(ge=0)
+    generation_mwh: Series[float] = Field(ge=0, nullable=True)
     "Hydropower generation for the given year"
 
     index: Index[int] = Field(unique=True)

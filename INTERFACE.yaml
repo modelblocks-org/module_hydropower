@@ -26,7 +26,9 @@ pathvars:
   results:
     statistics:
       default: "<results>/{shapes}/statistics/generation.parquet"
-      description: National hydropower generation statistics for the requested shapes.
+      description: >
+        National hydropower generation statistics for the requested shapes.
+        Generated using EIA data.
     disaggregated_inflow:
       default: "<results>/{shapes}/disaggregated/inflow_mwh.parquet"
       description: >

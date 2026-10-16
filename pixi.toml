@@ -33,12 +33,8 @@ pandera-geopandas = ">=0.24"
 pyarrow = ">=19.0.1"
 scipy = ">=1.15.2"
 
-[environments.module]
-features = ["module"]
-no-default-feature = true
-
-[environments.module.dependencies]
-country_converter = ">=1.3.2"
+[environments]
+module = { features = ["module"], no-default-feature = true }
 
 [tasks]
 test-integration = {cmd = "pytest tests/integration_test.py"}

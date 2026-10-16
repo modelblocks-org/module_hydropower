@@ -50,7 +50,7 @@ rule powerplants_get_inflow_mwh:
     input:
         inflow_m3=rules.powerplants_get_inflow_m3.output.inflow,
         adjusted_powerplants=rules.powerplants_adjust_location.output.adjusted_powerplants,
-        statistics="<statistics>",
+        statistics=get_generation_adjustement_file(),
     output:
         inflow_mwh="<disaggregated_inflow>",
     log:

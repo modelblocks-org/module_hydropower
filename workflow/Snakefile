@@ -12,8 +12,9 @@ pathvars:
     # User resources
     shapes="<resources>/user/{shapes}/shapes.parquet",
     powerplants="<resources>/user/{shapes}/powerplants.parquet",
+    statistics_user="<resources>/user/{shapes}/generation.parquet",
     # Module results
-    statistics="<results>/{shapes}/statistics/generation.parquet",
+    statistics_eia="<results>/{shapes}/statistics/generation.parquet",
     disaggregated_inflow="<results>/{shapes}/disaggregated/inflow_mwh.parquet",
     aggregated_inflow_pu="<results>/{shapes}/aggregated/{plant_type}_inflow_pu.parquet",
 

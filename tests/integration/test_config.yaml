@@ -6,6 +6,7 @@ module_hydropower:
     start: 2015
     end: 2016
   powerplants:
+    generation_adjustement: user
     technology_mapping:
       run_of_river: "run of river"
       reservoir: "reservoir"

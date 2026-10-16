@@ -34,7 +34,7 @@ Data processing steps:
 
 3. User provided shapes, powerplants and configuration are used to construct a data request to the [Copernicus Data Store](https://cds.climate.copernicus.eu/) using the [`atlite` library](https://github.com/PyPSA/atlite).
 4. `atlite` is used to construct inflow timeseries per powerplant.
-5. Inflow timeseries are combined and aggregated to the requested resolution, using national-level statistics from the [EIA](https://www.eia.gov/international/) as a guiding normalisation heuristic for total generation.
+5. Inflow timeseries are combined and aggregated to the requested resolution, using national-level statistics (either from [EIA](https://www.eia.gov/international/) or a user provided file) as a guiding normalisation heuristic for total generation.
 6. Per-unit inflow timeseries ($PU_{t,r}$) are produced for each region with available capacity.
 The relation is $InflowMWh_{t,r} = PU_{t,r} \cdot Cap_{r}$, where $Cap_r$ is the capacity per region.
     - For run of river powerplants, the timeseries are capped so they may not exceed available capacity.

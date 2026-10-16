@@ -13,3 +13,4 @@ dependencies:
 - pandera-geopandas >=0.24
 - pyarrow >=19.0.1
 - scipy >=1.15.2
+- country_converter >=1.3.2

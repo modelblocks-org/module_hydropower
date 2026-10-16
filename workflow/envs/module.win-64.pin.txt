@@ -170,6 +170,7 @@ https://conda.anaconda.org/conda-forge/noarch/colorama-0.4.6-pyhd8ed1ab_1.conda#
 https://conda.anaconda.org/conda-forge/noarch/ipython-9.14.1-pyhe2676ad_0.conda#bf12187c2d1ef0bb63df01ace31ff26b
 https://conda.anaconda.org/conda-forge/noarch/ipdb-0.13.13-pyhd8ed1ab_1.conda#044c5249ad8ea18a414d07baa1f369ea
 https://conda.anaconda.org/conda-forge/win-64/curl-8.21.0-h8206538_0.conda#b09f232e463d78e4cc0bec233007441b
+https://conda.anaconda.org/conda-forge/noarch/country_converter-1.3.2-pyhd8ed1ab_0.conda#193a9e54636d8d70781a3e56370f5502
 https://conda.anaconda.org/conda-forge/win-64/yaml-0.2.5-h6a83c73_3.conda#433699cba6602098ae8957a323da2664
 https://conda.anaconda.org/conda-forge/noarch/xarray-2026.4.0-pyhc364b38_0.conda#099794df685f800c3f319ff4742dc1bb
 https://conda.anaconda.org/conda-forge/noarch/tqdm-4.68.3-pyha7b4d00_0.conda#0b814124391b7e176bcc0cce445a3a36

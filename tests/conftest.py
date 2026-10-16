@@ -54,7 +54,7 @@ def user_path(cds_api_file) -> Path:
 
 
 @pytest.fixture(scope="module")
-def module_path(user_path: Path):
+def module_path(cds_api_file: Path):
     """Parent directory of the project."""
     module_path = Path(__file__).parent.parent
 
@@ -66,7 +66,9 @@ def module_path(user_path: Path):
         shutil.rmtree(integration_dir / "results/", ignore_errors=True)
 
     # copy user inputs needed by the module
-    dir_to_dir_copy(user_path / "MNE", integration_dir / "resources/inputs/MNE")
+    dir_to_dir_copy(
+        module_path / "tests/files/MNE", integration_dir / "resources/inputs/MNE"
+    )
     # copy downloads with unstable Github CI access
     dir_to_dir_copy(
         module_path / "tests/files/hydrobasins",

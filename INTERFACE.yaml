@@ -23,8 +23,14 @@ pathvars:
       description: |
         Powerplant statistics.
         See the schemas in `workflow/scripts/_schemas.py` for more information.
+    statistics_user:
+      default: "<resources>/user/{shapes}/generation.parquet"
+      description: |
+        Optional. Annual national hydropower generation statistics.
+        Used when "generation_adjustement" is set to "user" in the configuration.
+        See the schemas in `workflow/scripts/_schemas.py` for more information.
   results:
-    statistics:
+    statistics_eia:
       default: "<results>/{shapes}/statistics/generation.parquet"
       description: >
         National hydropower generation statistics for the requested shapes.

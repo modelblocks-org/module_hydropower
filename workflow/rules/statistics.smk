@@ -21,7 +21,7 @@ rule prepare_statistics:
         shapes="<shapes>",
         statistics=rules.harmonise_statistics.output.generation,
     output:
-        generation="<statistics>",
+        generation="<statistics_eia>",
         plot="<results>/{shapes}/statistics/generation.pdf",
     log:
         "<logs>/{shapes}/prepare_statistics.log",

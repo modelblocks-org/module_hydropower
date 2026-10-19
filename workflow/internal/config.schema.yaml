@@ -95,17 +95,17 @@ properties:
       - technology_mapping
     additionalProperties: false  # Ensures no extra properties in "powerplants"
   crs:
-    description: Coordinate reference system settings in the form 'epsg:xxxx'.
+    description: Coordinate reference system settings in the form 'EPSG:xxxx'.
     type: object
     properties:
       projected:
         description: CRS to use during operations related to distance / area.
         type: string
-        pattern: "^epsg:\\d{4,5}$"
+        pattern: "^[A-Za-z][A-Za-z0-9_-]*:[A-Za-z0-9_.-]+$"
       geographic:
         description: CRS to use during operations related to location.
         type: string
-        pattern: "^epsg:\\d{4,5}$"
+        pattern: "^[A-Za-z][A-Za-z0-9_-]*:[A-Za-z0-9_.-]+$"
     required:
       - projected
       - geographic

@@ -22,7 +22,7 @@ and the `snakemake` [documentation](https://snakemake.readthedocs.io/en/stable/s
 Data processing steps:
 
 <p align="center">
-  <img src="./figures/rulegraph.png" width="60%">
+  <img src="./figures/rulegraph.png" width="50%">
 </p>
 
 1. A global dataset of hydro basins is created for a requested Pfafstetter level using data from the [HydroBASINS](https://www.hydrosheds.org/products/hydrobasins) dataset.
@@ -32,9 +32,10 @@ Data processing steps:
   <img src="./figures/adjusted_powerplants.png" width="60%">
 </p>
 
-3. User provided shapes, powerplants and configuration are used to construct a data request to the [Copernicus Data Store](https://cds.climate.copernicus.eu/) using the [`atlite` library](https://github.com/PyPSA/atlite).
-4. `atlite` is used to construct inflow timeseries per powerplant.
-5. Inflow timeseries are combined and aggregated to the requested resolution, using national-level statistics (either from [EIA](https://www.eia.gov/international/) or a user provided file) as a guiding normalisation heuristic for total generation.
+3. If requested, [EIA](https://www.eia.gov/international/) statistics of national hydropower generation are downloaded and harmonised to a standardised schema.
+Users may decide to replace this data with their own, or to adjust it slightly (see the [interfacing](#input--output-structure)).
+4. User provided shapes, powerplants and configuration are used to construct a data request to the [Copernicus Data Store](https://cds.climate.copernicus.eu/) using the [`atlite` library](https://github.com/PyPSA/atlite) to construct inflow timeseries per powerplant.
+5. Inflow timeseries are combined and aggregated to the requested resolution, using the national generation statistics as a guiding normalisation heuristic for total generation.
 6. Per-unit inflow timeseries ($PU_{t,r}$) are produced for each region with available capacity.
 The relation is $InflowMWh_{t,r} = PU_{t,r} \cdot Cap_{r}$, where $Cap_r$ is the capacity per region.
     - For run of river powerplants, the timeseries are capped so they may not exceed available capacity.
@@ -62,7 +63,14 @@ Please consult the configuration [README](./config/README.md) and the [configura
 
 As input, you need a file with the polygons to aggregate into (the 'shapes'), and a file specifying national hydropower plants (either RoR or reservoir). These files should follow the `pandera` schemas specified in [_schemas.py](./workflow/scripts/_schemas.py), and can be created using other Modelblocks modules.
 
-Outputs include aggregated timeseries per hydropower plant type, disaggregated inflow timeseries (per point powerplant), and national generation statistics.
+If [configured](#configuration), the internally created EIA generation statistics file can be replaced or adjusted by the user.
+
+<p align="center">
+  <img src="./figures/generation.drawio.png" width="50%">
+</p>
+
+
+Outputs include aggregated timeseries per hydropower plant type, disaggregated inflow timeseries (per point powerplant), and EIA national generation statistics.
 
 Please consult the [interface file](./INTERFACE.yaml) for more information.
 

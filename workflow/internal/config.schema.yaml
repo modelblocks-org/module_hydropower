@@ -2,6 +2,12 @@ $schema: "https://json-schema.org/draft/2020-12/schema"
 description: "Schema for user-provided configuration files."
 type: object
 additionalProperties: false
+required:
+  - pfafstetter_level
+  - years
+  - powerplants
+  - crs
+  - smoothing_hours
 properties:
   pfafstetter_level:
     description: >
@@ -30,6 +36,15 @@ properties:
     description: Powerplant related settings.
     type: object
     properties:
+      generation_adjustement:
+        description: |
+          Specifies which file to use for powerplant inflow normalisation.
+          - EIA: uses the internally generated EIA statistics (results.statistics_eia).
+          - user: uses a user provided file instead.
+        type: string
+        enum:
+          - EIA
+          - user
       technology_mapping:
         description: >
           Maps internal names to user-provided names in powerplants files, to make integration smoother.
@@ -75,21 +90,22 @@ properties:
           - max_dropped
         additionalProperties: false  # Ensures no extra properties in "basin_adjustment"
     required:
+      - generation_adjustement
       - basin_adjustment
       - technology_mapping
     additionalProperties: false  # Ensures no extra properties in "powerplants"
   crs:
-    description: Coordinate reference system settings in the form 'epsg:xxxx'.
+    description: Coordinate reference system settings in the form 'EPSG:xxxx'.
     type: object
     properties:
       projected:
         description: CRS to use during operations related to distance / area.
         type: string
-        pattern: "^epsg:\\d{4,5}$"
+        pattern: "^[A-Za-z][A-Za-z0-9_-]*:[A-Za-z0-9_.-]+$"
       geographic:
         description: CRS to use during operations related to location.
         type: string
-        pattern: "^epsg:\\d{4,5}$"
+        pattern: "^[A-Za-z][A-Za-z0-9_-]*:[A-Za-z0-9_.-]+$"
     required:
       - projected
       - geographic

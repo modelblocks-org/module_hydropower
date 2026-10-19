@@ -81,6 +81,14 @@ def _estimate_bounded_powerplant_inflow(
     assert annual_national_generation.index.is_unique, (
         f"Country data for {year} is not unique!"
     )
+    required_generation = annual_national_generation.reindex(
+        plants_by_id["country_id"].unique()
+    )
+    missing = required_generation.index[required_generation.isna()].tolist()
+    if missing:
+        raise ValueError(
+            f"Missing or null generation statistics for {year}, countries: {missing}"
+        )
     annual_powerplant_mwh = plants_by_id.apply(
         lambda x: (
             annual_national_generation[x.country_id]

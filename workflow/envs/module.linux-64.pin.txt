@@ -188,6 +188,7 @@ https://conda.anaconda.org/conda-forge/noarch/decorator-5.3.1-pyhd8ed1ab_0.conda
 https://conda.anaconda.org/conda-forge/noarch/ipython-9.14.1-pyh53cf698_0.conda#fbd58549b374103c1a80577f09a328ef
 https://conda.anaconda.org/conda-forge/noarch/ipdb-0.13.13-pyhd8ed1ab_1.conda#044c5249ad8ea18a414d07baa1f369ea
 https://conda.anaconda.org/conda-forge/linux-64/curl-8.21.0-hcf29cc6_0.conda#35caaabe13a4aa0fe77ea634c71478b8
+https://conda.anaconda.org/conda-forge/noarch/country_converter-1.3.2-pyhd8ed1ab_0.conda#193a9e54636d8d70781a3e56370f5502
 https://conda.anaconda.org/conda-forge/linux-64/yaml-0.2.5-h280c20c_3.conda#a77f85f77be52ff59391544bfe73390a
 https://conda.anaconda.org/conda-forge/noarch/xarray-2026.4.0-pyhc364b38_0.conda#099794df685f800c3f319ff4742dc1bb
 https://conda.anaconda.org/conda-forge/noarch/tqdm-4.68.3-pyh8f84b5b_0.conda#65094960cb7ed216b6049aab57205902

@@ -60,3 +60,43 @@ rule download_cutout:
         "Downloading runoff cutout from {params.start_year}-01-01 to {params.end_year}-12-31."
     script:
         "../scripts/download_cutout.py"
+
+
+rule download_glofas_uparea:
+    output:
+        uparea="<resources>/automatic/glofas/uparea.nc",
+    log:
+        "<logs>/download_glofas_uparea.log",
+    localrule: True
+    conda:
+        "../envs/module.yaml"
+    params:
+        url=internal["resources"]["automatic"]["GloFAS_uparea"],
+    message:
+        "Download the GloFAS upstream area map."
+    shell:
+        'curl -fsSLo {output.uparea:q} "{params.url}" 2>{log:q}'
+
+
+rule download_glofas_discharge:
+    input:
+        shapes="<shapes>",
+    output:
+        discharge="<resources>/automatic/shapes/{shapes}/glofas_discharge.nc",
+    log:
+        "<logs>/{shapes}/download_glofas_discharge.log",
+    localrule: True
+    conda:
+        "../envs/module.yaml"
+    params:
+        settings=internal["glofas"],
+        crs=internal["era5_crs"],
+        # Pad the area so that the search window of border powerplants stays inside it
+        padding_deg=(config["inflow"]["glofas"]["search_window_cells"] + 1)
+        * internal["glofas"]["cell_deg"],
+        start_year=config["years"]["start"],
+        end_year=config["years"]["end"],
+    message:
+        "Downloading GloFAS river discharge from {params.start_year}-01-01 to {params.end_year}-12-31."
+    script:
+        "../scripts/download_glofas_discharge.py"

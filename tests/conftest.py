@@ -69,10 +69,11 @@ def module_path(cds_api_file: Path):
     dir_to_dir_copy(
         module_path / "tests/files/MNE", integration_dir / "resources/inputs/MNE"
     )
-    # copy downloads with unstable Github CI access
-    dir_to_dir_copy(
-        module_path / "tests/files/hydrobasins",
-        integration_dir / "resources/module/resources/automatic/hydrobasins",
-    )
+    # copy downloads with unstable Github CI access (one copy per module instance)
+    for instance in ("module", "module_glofas"):
+        dir_to_dir_copy(
+            module_path / "tests/files/hydrobasins",
+            integration_dir / f"resources/{instance}/resources/automatic/hydrobasins",
+        )
 
     return module_path

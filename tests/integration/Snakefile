@@ -28,6 +28,25 @@ module module_hydropower:
 use rule * from module_hydropower as module_hydropower_*
 
 
+# A second instance of the module, using GloFAS river discharge as inflow source.
+module module_hydropower_glofas:
+    pathvars:
+        shapes="resources/inputs/{shapes}/shapes.parquet",
+        powerplants="resources/inputs/{shapes}/powerplants.parquet",
+        statistics_user="resources/inputs/{shapes}/generation.parquet",
+        aggregated_inflow_pu="results/outputs_glofas/{shapes}/{plant_type}_pu.parquet",
+        logs="resources/module_glofas/logs",
+        resources="resources/module_glofas/resources",
+        results="resources/module_glofas/results",
+    snakefile:
+        "../../workflow/Snakefile"
+    config:
+        config["module_hydropower_glofas"]
+
+
+use rule * from module_hydropower_glofas as module_hydropower_glofas_*
+
+
 PLANTS = ["run_of_river", "reservoir"]
 SHAPES = ["MNE"]
 
@@ -37,9 +56,10 @@ rule all:
     default_target: True
     input:
         expand(
-            "results/outputs/{shapes}/{plant_type}_pu.parquet",
+            "results/{outputs}/{shapes}/{plant_type}_pu.parquet",
+            outputs=["outputs", "outputs_glofas"],
             shapes=SHAPES,
             plant_type=PLANTS,
         ),
     message:
-        "Generate PU timeseries for a small country."
+        "Generate PU timeseries for a small country, with ERA5 runoff and GloFAS discharge."

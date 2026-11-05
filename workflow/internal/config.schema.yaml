@@ -114,5 +114,44 @@ properties:
     description: >
       Number of hours to use for smoothing the resulting timeseries in the form 'xh' (e.g., 168h, 24h).
       '1h' will result in no smoothing.
+      Only applies to the 'era5' inflow source: GloFAS discharge is already routed along the river network.
     type: string
     pattern: ^(?!0h$)\d+h$
+  inflow:
+    description: Source of the water inflow timeseries of each powerplant.
+    type: object
+    default:
+      source: era5
+      glofas:
+        search_window_cells: 1
+    properties:
+      source:
+        description: |
+          - era5: ERA5 runoff aggregated over the HydroBASINS upstream of each powerplant (via atlite).
+          - glofas: GloFAS v4.0 river discharge at the river cell next to each powerplant.
+            Downloaded from the Copernicus Early Warning Data Store (EWDS): requires an EWDS account
+            and the acceptance of the dataset licence.
+        type: string
+        enum:
+          - era5
+          - glofas
+        default: era5
+      glofas:
+        description: Settings for the 'glofas' inflow source.
+        type: object
+        default:
+          search_window_cells: 1
+        properties:
+          search_window_cells:
+            description: >
+              Each powerplant takes the discharge of the GloFAS cell (0.05 deg) with the largest upstream
+              area within a square window of +-n cells around the cell nearest to it (n=1: 3x3 cells).
+              0 uses the nearest cell only. This is a simple approximation of the river location.
+            type: integer
+            minimum: 0
+            maximum: 5
+            default: 1
+        additionalProperties: false
+    required:
+      - source
+    additionalProperties: false

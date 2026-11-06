@@ -86,11 +86,13 @@ def _pick_cells(
 
 
 def _daily_to_hourly_m3(daily_m3s: pd.DataFrame) -> pd.DataFrame:
-    """Daily mean discharge [m3/s] -> hourly water volume [m3], constant within each day."""
+    """Daily mean discharge [m3/s] -> hourly volume [m3], linear between daily values at noon."""
     hours = pd.date_range(
         daily_m3s.index[0], daily_m3s.index[-1] + pd.Timedelta(hours=23), freq="h"
     )
-    return daily_m3s.reindex(hours, method="ffill") * 3600
+    noon = daily_m3s.set_axis(daily_m3s.index + pd.Timedelta(hours=12))
+    hourly = noon.reindex(hours).interpolate(method="time", limit_area="inside")
+    return hourly.ffill().bfill() * 3600
 
 
 def powerplants_get_inflow_m3_glofas(

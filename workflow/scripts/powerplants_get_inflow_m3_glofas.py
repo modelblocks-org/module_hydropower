@@ -46,7 +46,7 @@ def _pick_cells(
     """For each powerplant, the cell with the largest upstream area within +-window cells.
 
     This is a simple approximation of the river location: it tends to pick the largest river
-    near the plant, which can be wrong for high-head schemes fed by distant intakes.
+    near the plant, so a small plant on a tributary can be moved onto the main river.
 
     TODO: replace with a physically-based river snapping (see issue #26), e.g. a score
     combining distance and the match between the cell discharge and the plant design flow.

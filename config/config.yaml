@@ -15,3 +15,7 @@ powerplants:
     max_outside: 50
     max_dropped: 30
 smoothing_hours: "72h"
+inflow:
+  source: era5  # era5 | glofas
+  glofas:
+    search_window_cells: 1  # 3x3 GloFAS cells around each powerplant

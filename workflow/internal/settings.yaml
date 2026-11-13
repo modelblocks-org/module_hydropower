@@ -4,6 +4,15 @@ resources:
     # Links for automatically downloaded files
     EIA: "https://zenodo.org/records/19401947/files/EIA-INTL.zip?download=1"
     HydroBASINS: https://data.hydrosheds.org/file/hydrobasins/standard/hybas_{continent}_lev01-12_v1c.zip
+    # GloFAS v4.0 upstream area (static, 0.05 deg, m2), from https://confluence.ecmwf.int/display/CEMS/Auxiliary+Data
+    GloFAS_uparea: "https://confluence.ecmwf.int/download/attachments/242067380/uparea_glofas_v4_0.nc?api=v2"
+glofas:
+  ewds_url: "https://ewds.climate.copernicus.eu/api"
+  dataset: "cems-glofas-historical"
+  # Must match the upstream area file above
+  system_version: "version_4_0"
+  # GloFAS grid spacing, used to pad the download area around the shapes
+  cell_deg: 0.05
 continent_codes: ["af", "ar", "as", "au", "eu", "gr", "na", "sa", "si"]
 pfafstetter_level_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
 era5_crs: "epsg:4326"

@@ -26,24 +26,50 @@ rule powerplants_adjust_location:
         "../scripts/powerplants_adjust_location.py"
 
 
-rule powerplants_get_inflow_m3:
-    input:
-        adjusted_powerplants=rules.powerplants_adjust_location.output.adjusted_powerplants,
-        basins=f"<resources>/automatic/hydrobasins/global_{config["pfafstetter_level"]}.parquet",
-        shapes="<shapes>",
-        cutout=rules.download_cutout.output.cutout,
-    output:
-        inflow="<resources>/automatic/shapes/{shapes}/disaggregated/inflow_m3.parquet",
-    log:
-        "<logs>/{shapes}/powerplants_get_inflow_m3.log",
-    conda:
-        "../envs/module.yaml"
-    params:
-        smoothing_hours=config["smoothing_hours"],
-    message:
-        "Calculating hydro powerplant inflow in m3."
-    script:
-        "../scripts/powerplants_get_inflow_m3.py"
+if config["inflow"]["source"] == "era5":
+
+    rule powerplants_get_inflow_m3:
+        input:
+            adjusted_powerplants=rules.powerplants_adjust_location.output.adjusted_powerplants,
+            basins=f"<resources>/automatic/hydrobasins/global_{config["pfafstetter_level"]}.parquet",
+            shapes="<shapes>",
+            cutout=rules.download_cutout.output.cutout,
+        output:
+            inflow="<resources>/automatic/shapes/{shapes}/disaggregated/inflow_m3.parquet",
+        log:
+            "<logs>/{shapes}/powerplants_get_inflow_m3.log",
+        conda:
+            "../envs/module.yaml"
+        params:
+            smoothing_hours=config["smoothing_hours"],
+        message:
+            "Calculating hydro powerplant inflow in m3 from ERA5 runoff."
+        script:
+            "../scripts/powerplants_get_inflow_m3.py"
+
+elif config["inflow"]["source"] == "glofas":
+
+    rule powerplants_get_inflow_m3:
+        input:
+            adjusted_powerplants=rules.powerplants_adjust_location.output.adjusted_powerplants,
+            discharge=rules.download_glofas_discharge.output.discharge,
+            uparea=rules.download_glofas_uparea.output.uparea,
+        output:
+            inflow="<resources>/automatic/shapes/{shapes}/disaggregated/inflow_m3.parquet",
+            cells="<resources>/automatic/shapes/{shapes}/disaggregated/glofas_cells.parquet",
+        log:
+            "<logs>/{shapes}/powerplants_get_inflow_m3.log",
+        conda:
+            "../envs/module.yaml"
+        params:
+            search_window_cells=config["inflow"]["glofas"]["search_window_cells"],
+        message:
+            "Calculating hydro powerplant inflow in m3 from GloFAS river discharge."
+        script:
+            "../scripts/powerplants_get_inflow_m3_glofas.py"
+
+else:
+    raise ValueError(f"Invalid inflow source '{config['inflow']['source']}'.")
 
 
 rule powerplants_get_inflow_mwh:

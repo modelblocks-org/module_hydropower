@@ -18,3 +18,29 @@ module_hydropower:
     projected: "epsg:3857"
     geographic: "epsg:4326"
   smoothing_hours: "72h"
+  inflow:
+    source: era5
+
+# Same case, with GloFAS river discharge as inflow source
+module_hydropower_glofas:
+  pfafstetter_level: "01"
+  years:
+    start: 2015
+    end: 2016
+  powerplants:
+    generation_adjustement: user
+    technology_mapping:
+      run_of_river: "run of river"
+      reservoir: "reservoir"
+    basin_adjustment:
+      buffer_radius: 400
+      max_outside: 0
+      max_dropped: 0
+  crs:
+    projected: "epsg:3857"
+    geographic: "epsg:4326"
+  smoothing_hours: "72h"
+  inflow:
+    source: glofas
+    glofas:
+      search_window_cells: 1

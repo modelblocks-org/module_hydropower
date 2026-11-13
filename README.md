@@ -34,7 +34,10 @@ Data processing steps:
 
 3. If requested, [EIA](https://www.eia.gov/international/) statistics of national hydropower generation are downloaded and harmonised to a standardised schema.
 Users may decide to replace this data with their own, or to adjust it slightly (see the [interfacing](#input--output-structure)).
-4. User provided shapes, powerplants and configuration are used to construct a data request to the [Copernicus Data Store](https://cds.climate.copernicus.eu/) using the [`atlite` library](https://github.com/PyPSA/atlite) to construct inflow timeseries per powerplant.
+4. User provided shapes, powerplants and configuration are used to construct inflow timeseries per powerplant, from one of two sources (`inflow.source` in the configuration):
+    - `era5` (default): ERA5 runoff from the [Copernicus Data Store](https://cds.climate.copernicus.eu/), aggregated over the HydroBASINS upstream of each powerplant with the [`atlite` library](https://github.com/PyPSA/atlite).
+    - `glofas`: daily river discharge of the [GloFAS](https://ewds.climate.copernicus.eu/datasets/cems-glofas-historical) v4.0 reanalysis, from the Copernicus Early Warning Data Store (EWDS).
+    Each powerplant takes the discharge of the GloFAS cell with the largest upstream area within a small window around it (3x3 cells by default), a simple approximation of the river location.
 5. Inflow timeseries are combined and aggregated to the requested resolution, using the national generation statistics as a guiding normalisation heuristic for total generation.
 6. Per-unit inflow timeseries ($PU_{t,r}$) are produced for each region with available capacity.
 The relation is $InflowMWh_{t,r} = PU_{t,r} \cdot Cap_{r}$, where $Cap_r$ is the capacity per region.
@@ -57,6 +60,11 @@ The relation is $InflowMWh_{t,r} = PU_{t,r} \cdot Cap_{r}$, where $Cap_r$ is the
 <!-- Please describe how to configure this module below -->
 
 Please consult the configuration [README](./config/README.md) and the [configuration example](./config/config.yaml) for a general overview on the configuration options of this module.
+
+> [!NOTE]
+> Both inflow sources need a Copernicus account and an API key in `~/.cdsapirc` (or in the `CDSAPI_KEY` environment variable).
+> The `glofas` source downloads from the EWDS, whose url the module sets itself, so `~/.cdsapirc` can keep pointing to the Climate Data Store.
+> Before the first download, the licence of the [GloFAS historical dataset](https://ewds.climate.copernicus.eu/datasets/cems-glofas-historical) must be accepted once on its website, with the same account.
 
 ## Input / output structure
 <!-- Please describe input / output file placement below -->
@@ -125,6 +133,9 @@ Lehner, B., Grill G. (2013). Global river hydrography and network routing: basel
     - Please consult the [declaration statement](./workflow/internal/HydroSHEDS.txt) in this repository for further details.
 * **Inflow timeseries dataset.**
 Hersbach H, Bell B, Berrisford P, et al. The ERA5 global reanalysis. Q J R Meteorol Soc. 2020;146:1999–2049. <https://doi.org/10.1002/qj.3803>
+* **River discharge dataset (`glofas` inflow source).**
+Copernicus Emergency Management Service (2019). River discharge historical data from the Global Flood Awareness System (GloFAS), v4.0. Early Warning Data Store (EWDS). <https://doi.org/10.24381/cds.a4fdd6b9>
+    - Upstream area map: GloFAS v4.0 auxiliary data, <https://confluence.ecmwf.int/display/CEMS/Auxiliary+Data>.
 * **Inflow timeseries processing.**
 Hofmann et al., (2021). atlite: A Lightweight Python Package for Calculating Renewable Power Potentials and Time Series. Journal of Open Source Software, 6(62), 3294, <https://doi.org/10.21105/joss.03294>
 * **Reference source code for national adjustment heuristic.**
